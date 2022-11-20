@@ -13,8 +13,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/',function(){
+// return 'test';
+// });
 
+Route::get('/','loginController@index');
+Route::post('/login','loginController@loginProcess');
+Route::get('/dashboard','dashboardController@index');
 Route::get('/contract','contractController@index');
+
+// Lessor index
+Route::get('/lessor','lessorController@index');
+
+// Lease index
+Route::get('/lease','leaseController@index');
+
+
+
+
+Route::get('/cheque','lessorController@getCheque');
+
+
+
+Route::get('/test','App\Http\Controllers\loginController@callTest');

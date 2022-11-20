@@ -21,7 +21,7 @@
 
             <div class="panel panel-flat">
                 <div class="panel-heading">
-                    <h5 class="panel-title">Create New Contractsss</h5>
+                    <h5 class="panel-title">Create New Contract</h5>
                     <div class="heading-elements">
                         <ul class="icons-list">
                             <li><a data-action="collapse"></a></li>
