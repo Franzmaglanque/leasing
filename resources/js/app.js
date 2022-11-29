@@ -6,7 +6,8 @@
 
 require('./bootstrap');
 // import Select2 from 'v-select2-component';
-
+// import TypeaheadAutocomplete from "typeahead-autocomplete";
+// import Vue from 'vue'
 
 window.Vue = require('vue');
 
@@ -26,7 +27,7 @@ Vue.component('lessor-component', require('./components/Lessor.vue').default);
 Vue.component('contract-component', require('./components/contractComponent.vue').default);
 
 
-// Vue.component('Select2', Select2);
+
 
 
 /**

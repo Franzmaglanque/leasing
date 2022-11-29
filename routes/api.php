@@ -27,6 +27,10 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/province','contractController@getProvince');
     Route::get('/municipality','contractController@getMunicipality');
     Route::post('/contract','contractController@store');
+    Route::get('/fetchContract','contractController@getContractDetails');
+    Route::get('/contractArray','contractController@getContractArray');
+
+
 
     // Lessor
     Route::get('/lessor','lessorController@getLessors');

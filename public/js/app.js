@@ -2278,24 +2278,41 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var v_select2_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! v-select2-component */ "./node_modules/v-select2-component/dist/Select2.esm.js");
 
+
+// import TypeaheadAutocomplete from "typeahead-autocomplete";
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     Select2: v_select2_component__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   // "vue-select": require("vue-select"),
+
+  props: ['vendors'],
   data: function data() {
     return {
+      contractTable: false,
+      contractDetails: [],
       lessors: [],
       subjectLease: [],
       stores: [],
-      vendors: [],
+      vendors_list: [],
       provinces: [],
       municipalities: [],
+      contractDetail: {
+        yearNum: '',
+        yearFrom: '',
+        yearTo: '',
+        escalationPercent: '',
+        rentAmount: '',
+        vatAmount: '',
+        ewtAmount: '',
+        netDueAmount: '',
+        yearlyRent: ''
+      },
       contract: {
         id: null,
         lessor: '',
         vendor: '',
-        address: '',
+        address: null,
         store: '',
         subjectLease: '',
         contractPeriodFrom: '',
@@ -2309,20 +2326,19 @@ __webpack_require__.r(__webpack_exports__);
         advanceSecurityAmount: '',
         rentFreePeriodFrom: '',
         rentFreePeriodTo: '',
-        numRentFree: '',
+        rentFreeMonth: '',
+        rentFreeDay: '',
+        rentFreeYear: '',
         province: '',
-        municipality: ''
-      },
-      product: {
-        id: null,
-        name: '',
-        category_id: '',
-        price: ''
+        municipality: '',
+        rentFreeIncluded: false,
+        escalationPercent: ''
       },
       errors: {}
     };
   },
   mounted: function mounted() {
+    // $('#contractTbl').DataTable();
     this.fetchLessor();
     this.fetchVendor();
     this.fetchProvince();
@@ -2331,13 +2347,191 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {},
   methods: {
-    checkContract: function checkContract() {
-      console.log(this.contract.province);
+    checkContractDetail: function checkContractDetail() {
+      console.log(JSON.stringify(this.contractDetails));
+    },
+    //&& $("#address").val() != null && $("#address").val() != ""   
+    populateContractTable: function populateContractTable() {
+      var _this = this;
+      if ($("#lessor").val() != null && $("#lessor").val() != "") {
+        console.log($("#lessor").val() + "asdasd");
+        axios.post('/api/contract', this.contract).then(function (res) {
+          // console.log(res.request.responseText);
+          _this.contractTable = true;
+          _this.contractDetails = res.data.data;
+          // $('#contractTbl').DataTable();
+          console.log(res.request);
+          // if(res.request.responseText == 1){
+          // if(typeof res.request.responseText != "undefined"){
+
+          // if(res.request.responseText.length==0){
+          // if(typeof res.request.responseText == "undefined"){  
+          //     Swal.fire({
+          //         title:'Good job!',
+          //         text: 'You clicked the button!',
+          //         icon:'success'
+          //     });
+          // }else{
+          //     this.errors = JSON.parse(res.request.responseText);
+          // }
+        })["catch"](function (err) {
+          console.log(err.response);
+        });
+      } else {
+        $("#lessor").addClass("border-danger");
+        console.log($("#lessor").val());
+      }
+    },
+    populateContractTable_old2: function populateContractTable_old2() {
+      var contractData;
+      axios.post("/api/contract", this.contract).then(function (res) {
+        contractData = res.data.data;
+        var tblbahalaka = $('#contractTbl').DataTable({
+          destroy: true,
+          aaData: contractData,
+          aoColumns: [
+          // {"data": null,
+          // render: function (data, type, row, meta) {
+          //     return "<input type='checkbox'>"}
+          // },
+          {
+            mData: 'yearNum'
+          }, {
+            mData: 'yearFrom'
+          }, {
+            mData: 'yearTo'
+          }, {
+            "data": null,
+            render: function render(data, type, row, meta) {
+              return "<input type=\"text\">\n                        ";
+            }
+          }, {
+            mData: 'rentAmount'
+          }, {
+            mData: 'vatAmount'
+          }, {
+            mData: 'ewtAmount'
+          }, {
+            mData: 'netDueAmount'
+          }, {
+            mData: 'yearlyRent'
+          }],
+          columnDefs: [{
+            "defaultContent": "-",
+            "targets": "_all"
+          }, {
+            orderable: false,
+            targets: [0]
+          }, {
+            width: 500,
+            targets: 0
+          }]
+        });
+      });
+    },
+    populateContractTable_old: function populateContractTable_old() {
+      $('#contractTbl').dataTable({
+        destroy: true,
+        'ajax': {
+          type: 'GET',
+          // dataType: 'json',
+          contentType: 'application/json: charset=utf-8',
+          url: '/api/fetchContract',
+          dataSrc: 'data'
+        },
+        drawCallback: function drawCallback() {
+          // callCustomClass();
+        },
+        processing: false,
+        // serverSide: true,
+        searching: true,
+        stateSave: false,
+        columns: [{
+          title: 'ID',
+          name: 'id',
+          index: 'id',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'id'
+        }, {
+          title: 'Lessor Name',
+          name: 'lessorName',
+          index: 'lessorName',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'lessorName'
+        }, {
+          title: 'Lessor Status',
+          name: 'lessorStatus',
+          index: 'lessorStatus',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'lessorStatus'
+        },
+        // {title: 'Lessor Status', name: 'lessorStatus', index: 'lessorStatus', align: 'center', sortable: true, search: true, data: 'lessorStatusChanged'},
+        {
+          title: 'User Added',
+          name: 'userAdded',
+          index: 'userAdded',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'userAdded'
+        }, {
+          title: 'Date Added',
+          name: 'dateAdded',
+          index: 'dateAdded',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'dateAdded'
+        }, {
+          title: 'User Updated',
+          name: 'userUpdated',
+          index: 'userUpdated',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'userUpdated'
+        }, {
+          title: 'Date Updated',
+          name: 'dateUpdated',
+          index: 'dateUpdated',
+          align: 'center',
+          sortable: true,
+          search: true,
+          data: 'dateUpdated'
+        }]
+      });
+    },
+    recompute: function recompute(contractDetail, index) {
+      // console.log(this.contractDetails);
+      // console.log(JSON.stringify(contractDetail));
+      // this.contractDetail = Object.assign({},contractDetail);
+      var escalation = $("#" + index).val();
+
+      //  console.log(this.contractDetails[index]);
+      // var count =index;
+
+      for (var count = index; count <= this.contractDetails.length - 1; count++) {
+        if (escalation != '') {
+          this.contractDetails[count]['rentAmount'] = parseFloat(this.contractDetails[count]['rentAmount']) + parseFloat(this.contractDetails[count]['rentAmount']) * (parseFloat(escalation) * .01);
+          this.contractDetails[count]['vatAmount'] = parseFloat(this.contractDetails[count]['rentAmount']) * 0.12;
+          this.contractDetails[count]['ewtAmount'] = parseFloat(this.contractDetails[count]['rentAmount']) * -1 * 0.05;
+          console.log(this.contractDetails[count]['rentAmount']);
+        } else {
+          // this.contractDetails[count]['rentAmount'] = 
+        }
+      }
     },
     setAmount: function setAmount() {
       if (this.contract.advanceRent != '') {
         this.contract.advanceRentAmount = this.contract.monthlyRent * this.contract.advanceRent;
       }
+      // this.contract.monthlyRent = this.contract.monthlyRent.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")  
     },
     calcAdvanceSecurityAmout: function calcAdvanceSecurityAmout() {
       if (this.contract.monthlyRent == '') {
@@ -2350,57 +2544,152 @@ __webpack_require__.r(__webpack_exports__);
       if (this.contract.monthlyRent == '') {
         this.contract.advanceRentAmount = '';
       } else {
-        this.contract.advanceRentAmount = this.contract.monthlyRent * this.contract.advanceRent;
+        var vat = this.contract.monthlyRent * 0.12;
+        var ewt = this.contract.monthlyRent * -1 * 0.05;
+        var net = parseFloat(this.contract.monthlyRent) + parseFloat(vat) + parseFloat(ewt);
+        var advanceRent = parseFloat(net) * this.contract.advanceRent;
+        // this.contract.advanceRentAmount  = net * this.contract.advanceRent;
+        this.contract.advanceRentAmount = advanceRent;
+        // console.log(net);
       }
     },
+    rentFreeIncluded: function rentFreeIncluded() {
+      if (this.contract.rentFreeIncluded) {
+        this.contract.contractPeriodFrom = this.contract.rentFreePeriodFrom;
+        this.contract.rentFreePeriodTo = null;
+      }
+    },
+    computeRentFreeTo: function computeRentFreeTo() {
+      var dateFrom = new Date(this.contract.rentFreePeriodFrom);
+      if (this.contract.rentFreeDay) {
+        dateFrom.setDate(dateFrom.getDate() + parseInt(this.contract.rentFreeDay));
+      }
+      if (this.contract.rentFreeMonth) {
+        dateFrom.setMonth(dateFrom.getMonth() + parseInt(this.contract.rentFreeMonth));
+      }
+      if (this.contract.rentFreeYear) {
+        dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.rentFreeYear));
+      }
+      var year = dateFrom.toLocaleString("default", {
+        year: "numeric"
+      });
+      var month = dateFrom.toLocaleString("default", {
+        month: "2-digit"
+      });
+      var day = dateFrom.toLocaleString("default", {
+        day: "2-digit"
+      });
+      var newRentFreePeriodFrom = year + '-' + month + '-' + day;
+      // console.log(dateFrom);
+
+      if (this.contract.rentFreeIncluded) {
+        this.contract.contractPeriodFrom = this.contract.rentFreePeriodFrom;
+        this.contract.rentFreePeriodTo = null;
+      } else {
+        this.contract.rentFreePeriodTo = newRentFreePeriodFrom;
+        dateFrom.setDate(dateFrom.getDate() + 1);
+        var year = dateFrom.toLocaleString("default", {
+          year: "numeric"
+        });
+        var month = dateFrom.toLocaleString("default", {
+          month: "2-digit"
+        });
+        var day = dateFrom.toLocaleString("default", {
+          day: "2-digit"
+        });
+        var newRentFreePeriodFrom = year + '-' + month + '-' + day;
+        this.contract.contractPeriodFrom = newRentFreePeriodFrom;
+      }
+    },
+    computeContractEnd: function computeContractEnd() {
+      var dateFrom = new Date(this.contract.contractPeriodFrom);
+      if (this.contract.numYears) {
+        dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.numYears));
+        // dateFrom.setDate(dateFrom.getDate() + 1);
+      }
+
+      var year = dateFrom.toLocaleString("default", {
+        year: "numeric"
+      });
+      var month = dateFrom.toLocaleString("default", {
+        month: "2-digit"
+      });
+      var day = dateFrom.toLocaleString("default", {
+        day: "2-digit"
+      });
+      var newContractPeriodTo = year + '-' + month + '-' + day;
+      this.contract.contractPeriodTo = newContractPeriodTo;
+      // console.log(newContractPeriodTrom);
+    },
+    // calculate number of year from contract start and end
     calculateYear: function calculateYear() {
-      // console.log(new Date(this.contract.contractPeriodFrom).getTime());
-      // console.log(new Date('1999-09-24'));
-      // var from = new Date('2022-01-17');
-      // var to =  new Date('2021-09-24');
-      // console.log(new Date(this.contract.contractPeriodFrom).getTime());
-      // console.log(new Date(from.contractPeriodFrom).getTime());
-      var foo = new Date(this.contract.contractPeriodTo).getTime() - new Date(this.contract.contractPeriodFrom).getTime();
-      // const ms = from.getTime() - to.getTime();
-      // console.log(ms);
-      // console.log(foo);
-      // const date = new Date(ms);
-      var petsa = new Date(foo);
-      // console.log(date);
-      // console.log(petsa);
-      this.contract.numYears = Math.abs(petsa.getUTCFullYear() - 1970);
-      // console.log(Math.abs(petsa.getUTCFullYear() - 1970));
-    },
-    shownumYears: function shownumYears(event) {
-      console.log(event.target.value);
-    },
-    onChange: function onChange(event) {
-      // console.log(event.target.value);
-      console.log(this.contract.subjectLease);
-    },
-    ipakita: function ipakita() {
-      console.log(JSON.stringify(this.contract));
+      // const foo = new Date(this.contract.contractPeriodTo).getTime() - new Date(this.contract.contractPeriodFrom).getTime();
+      // const petsa = new Date(foo);
+      // this.contract.numYears = Math.abs(petsa.getUTCFullYear() - 1970);
+
+      // var yearFrom = new Date(this.contract.contractPeriodFrom).getFullYear();
+      // var yearTo = new Date(this.contract.contractPeriodTo).getFullYear();
+      // this.contract.numYears = yearTo - yearFrom;
+      // console.log(this.contract.numYears);
+
+      // console.log(yearTo.getFullYear());
     },
     saveContract: function saveContract() {
+      var _this2 = this;
       axios.post('/api/contract', this.contract).then(function (res) {
-        Swal.fire({
-          title: 'Good job!',
-          text: 'You clicked the button!',
-          icon: 'success'
-        });
+        //   Swal.fire({
+        //     title:'Good job!',
+        //     text: 'You clicked the button!',
+        //     icon:'success'
+        //   });
+        console.log(res.request.responseText);
+        if (res.request.responseText == 1) {
+          Swal.fire({
+            title: 'Good job!',
+            text: 'You clicked the button!',
+            icon: 'success'
+          });
+        } else {
+          _this2.errors = JSON.parse(res.request.responseText);
+        }
+        // console.log(res.request.responseText);
+        // this.clearContract();
+        // console.log(this.errors);
+        // console.log(this.errors['lessor']);
       })["catch"](function (err) {
         console.log(err.response);
       });
     },
+    clearContract: function clearContract() {
+      this.contract.id = null;
+      this.contract.lessor = '';
+      this.contract.vendor = '';
+      this.contract.address = '';
+      this.contract.store = '';
+      this.contract.subjectLease = '';
+      this.contract.contractPeriodFrom = '';
+      this.contract.contractPeriodTo = '';
+      this.contract.monthlyRent = '';
+      this.contract.advanceRent = '';
+      this.contract.advanceRentAmount = '';
+      this.contract.securityDeposit = '';
+      this.contract.advanceSecurityAmount = '';
+      this.contract.rentFreePeriodFrom = '';
+      this.contract.rentFreePeriodTo = '';
+      this.contract.province = '';
+      this.contract.municipality = '';
+      this.contract.area = '';
+      this.contract.numYears = '';
+    },
     fetchProvince: function fetchProvince() {
-      var _this = this;
+      var _this3 = this;
       axios.get("/api/province").then(function (res) {
-        _this.provinces = res.data;
+        _this3.provinces = res.data;
         // console.log(JSON.stringify(this.subjectLease));
       });
     },
     fetchMunicipalities: function fetchMunicipalities() {
-      var _this2 = this;
+      var _this4 = this;
       // console.log(this.contract.province);
       console.log(this.contract.province);
       axios.get("/api/municipality", {
@@ -2408,39 +2697,40 @@ __webpack_require__.r(__webpack_exports__);
           province: this.contract.province
         }
       }).then(function (res) {
-        _this2.municipalities = res.data;
+        _this4.municipalities = res.data;
         // console.log(JSON.stringify(this.subjectLease));
       });
     },
     fetchLessor: function fetchLessor() {
-      var _this3 = this;
+      var _this5 = this;
       axios.get("/api/selectlessor").then(function (res) {
         // this.lessors = res.data.data;
         // console.log(res.data.data);
-        _this3.lessors = res.data.data;
+        _this5.lessors = res.data.data;
         // console.log(JSON.stringify(this.lessors));
         // console.log(JSON.stringify(this.subjectLease));
       });
     },
     fetchLeaseType: function fetchLeaseType() {
-      var _this4 = this;
+      var _this6 = this;
       axios.get("/api/contract").then(function (res) {
-        _this4.subjectLease = res.data;
+        _this6.subjectLease = res.data;
         // console.log(JSON.stringify(this.subjectLease));
       });
     },
     fetchStore: function fetchStore() {
-      var _this5 = this;
+      var _this7 = this;
       axios.get("/api/store").then(function (res) {
-        _this5.stores = res.data;
+        _this7.stores = res.data;
         // console.log(JSON.stringify(this.stores));
       });
     },
     fetchVendor: function fetchVendor() {
-      var _this6 = this;
+      var _this8 = this;
       axios.get("/api/vendor").then(function (res) {
-        _this6.vendors = res.data;
+        _this8.vendors_list = res.data;
       });
+      // this.vendor = this.vendors_list;
     },
     setProvCode: function setProvCode(event) {
       // console.log(event);
@@ -2891,9 +3181,13 @@ var render = function render() {
   }, [_c("label", {
     staticClass: "col-lg-3 control-label"
   }, [_vm._v("Lessor:")]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-9"
+    staticClass: "col-lg-9",
+    attrs: {
+      id: "sample"
+    }
   }, [_c("Select2", {
     attrs: {
+      id: "lessor",
       options: _vm.lessors
     },
     model: {
@@ -2909,18 +3203,40 @@ var render = function render() {
     staticClass: "col-lg-3 control-label"
   }, [_vm._v("Payee:")]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-9"
-  }, [_c("Select2", {
-    attrs: {
-      options: _vm.vendors
-    },
-    model: {
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model.lazy",
       value: _vm.contract.payee,
-      callback: function callback($$v) {
-        _vm.$set(_vm.contract, "payee", $$v);
-      },
-      expression: "contract.payee"
+      expression: "contract.payee",
+      modifiers: {
+        lazy: true
+      }
+    }],
+    staticClass: "form-control select",
+    attrs: {
+      "data-placeholder": "Select Province"
+    },
+    on: {
+      change: [function ($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.contract, "payee", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }, function ($event) {
+        return _vm.setProvCode($event);
+      }]
     }
-  })], 1)]), _vm._v(" "), _c("div", {
+  }, _vm._l(_vm.vendors, function (vendor) {
+    return _c("option", {
+      domProps: {
+        value: vendor.id
+      }
+    }, [_vm._v(_vm._s(vendor.text))]);
+  }), 0)])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     staticClass: "col-lg-3 control-label"
@@ -2929,21 +3245,24 @@ var render = function render() {
   }, [_c("input", {
     directives: [{
       name: "model",
-      rawName: "v-model",
+      rawName: "v-model.lazy",
       value: _vm.contract.address,
-      expression: "contract.address"
+      expression: "contract.address",
+      modifiers: {
+        lazy: true
+      }
     }],
     staticClass: "form-control",
     attrs: {
+      id: "address",
       type: "text"
     },
     domProps: {
       value: _vm.contract.address
     },
     on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "address", $event.target.value);
+      change: function change($event) {
+        return _vm.$set(_vm.contract, "address", $event.target.value);
       }
     }
   })])]), _vm._v(" "), _c("div", {
@@ -3023,7 +3342,196 @@ var render = function render() {
     staticClass: "form-group"
   }, [_c("label", {
     staticClass: "col-lg-3 control-label"
+  }, [_vm._v("Rent Free included in contract?")]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-9"
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.contract.rentFreeIncluded,
+      expression: "contract.rentFreeIncluded"
+    }],
+    staticClass: "select form-control",
+    attrs: {
+      "data-placeholder": "Select Lease type"
+    },
+    on: {
+      change: [function ($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.contract, "rentFreeIncluded", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }, function ($event) {
+        return _vm.rentFreeIncluded();
+      }]
+    }
+  }, [_c("option", {
+    domProps: {
+      value: true
+    }
+  }, [_vm._v("Included")]), _vm._v(" "), _c("option", {
+    domProps: {
+      value: false
+    }
+  }, [_vm._v("Not Included")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    staticClass: "col-lg-2 control-label"
+  }, [_vm._v("Rent Free Period:")]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-2 control-label"
+  }, [_c("label", [_vm._v("Number Years")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model.lazy",
+      value: _vm.contract.rentFreeYear,
+      expression: "contract.rentFreeYear",
+      modifiers: {
+        lazy: true
+      }
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.rentFreeYear
+    },
+    on: {
+      change: function change($event) {
+        return _vm.$set(_vm.contract, "rentFreeYear", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-2 control-label"
+  }, [_c("label", [_vm._v("Number Months")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model.lazy",
+      value: _vm.contract.rentFreeMonth,
+      expression: "contract.rentFreeMonth",
+      modifiers: {
+        lazy: true
+      }
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.rentFreeMonth
+    },
+    on: {
+      change: function change($event) {
+        return _vm.$set(_vm.contract, "rentFreeMonth", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-2 control-label"
+  }, [_c("label", [_vm._v("Number days")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model.lazy",
+      value: _vm.contract.rentFreeDay,
+      expression: "contract.rentFreeDay",
+      modifiers: {
+        lazy: true
+      }
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.rentFreeDay
+    },
+    on: {
+      change: function change($event) {
+        return _vm.$set(_vm.contract, "rentFreeDay", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-2 control-label"
+  }, [_c("label", [_vm._v("From:")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.contract.rentFreePeriodFrom,
+      expression: "contract.rentFreePeriodFrom"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "date",
+      id: "dateRangePicker"
+    },
+    domProps: {
+      value: _vm.contract.rentFreePeriodFrom
+    },
+    on: {
+      input: [function ($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.contract, "rentFreePeriodFrom", $event.target.value);
+      }, function ($event) {
+        return _vm.computeRentFreeTo();
+      }]
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-2 control-label"
+  }, [_c("label", [_vm._v("To:")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model.lazy",
+      value: _vm.contract.rentFreePeriodTo,
+      expression: "contract.rentFreePeriodTo",
+      modifiers: {
+        lazy: true
+      }
+    }],
+    staticClass: "form-control",
+    attrs: {
+      disabled: "",
+      type: "date",
+      id: "dateRangePicker"
+    },
+    domProps: {
+      value: _vm.contract.rentFreePeriodTo
+    },
+    on: {
+      change: function change($event) {
+        return _vm.$set(_vm.contract, "rentFreePeriodTo", $event.target.value);
+      }
+    }
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    staticClass: "col-lg-2 control-label"
   }, [_vm._v("Contract Period:")]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-3 control-label"
+  }, [_c("label", [_vm._v("Number of Years")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.contract.numYears,
+      expression: "contract.numYears"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.numYears
+    },
+    on: {
+      input: [function ($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.contract, "numYears", $event.target.value);
+      }, function ($event) {
+        return _vm.computeContractEnd();
+      }]
+    }
+  })]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-3 control-label"
   }, [_c("label", [_vm._v("From:")]), _vm._v(" "), _c("input", {
     directives: [{
@@ -3034,6 +3542,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     attrs: {
+      disabled: "",
       type: "date",
       id: "dateRangePicker"
     },
@@ -3057,6 +3566,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     attrs: {
+      disabled: "",
       type: "date",
       id: "dateRangePicker"
     },
@@ -3064,109 +3574,9 @@ var render = function render() {
       value: _vm.contract.contractPeriodTo
     },
     on: {
-      change: _vm.calculateYear,
       input: function input($event) {
         if ($event.target.composing) return;
         _vm.$set(_vm.contract, "contractPeriodTo", $event.target.value);
-      }
-    }
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-3 control-label"
-  }, [_c("label", [_vm._v("Number of Years")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.contract.numYears,
-      expression: "contract.numYears"
-    }],
-    staticClass: "form-control",
-    attrs: {
-      disabled: "",
-      type: "text"
-    },
-    domProps: {
-      value: _vm.contract.numYears
-    },
-    on: {
-      change: function change($event) {
-        return _vm.shownumYears($event);
-      },
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "numYears", $event.target.value);
-      }
-    }
-  })])]), _vm._v(" "), _c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    staticClass: "col-lg-3 control-label"
-  }, [_vm._v("Rent Free Period:")]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-3 control-label"
-  }, [_c("label", [_vm._v("From:")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.contract.rentFreePeriodFrom,
-      expression: "contract.rentFreePeriodFrom"
-    }],
-    staticClass: "form-control",
-    attrs: {
-      type: "date",
-      id: "dateRangePicker"
-    },
-    domProps: {
-      value: _vm.contract.rentFreePeriodFrom
-    },
-    on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "rentFreePeriodFrom", $event.target.value);
-      }
-    }
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-3 control-label"
-  }, [_c("label", [_vm._v("To:")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.contract.rentFreePeriodTo,
-      expression: "contract.rentFreePeriodTo"
-    }],
-    staticClass: "form-control",
-    attrs: {
-      type: "date",
-      id: "dateRangePicker"
-    },
-    domProps: {
-      value: _vm.contract.rentFreePeriodTo
-    },
-    on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "rentFreePeriodTo", $event.target.value);
-      }
-    }
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-3 control-label"
-  }, [_c("label", [_vm._v("Number Months and days")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.contract.numRentFree,
-      expression: "contract.numRentFree"
-    }],
-    staticClass: "form-control",
-    attrs: {
-      disabled: "",
-      type: "text"
-    },
-    domProps: {
-      value: _vm.contract.numRentFree
-    },
-    on: {
-      input: function input($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "numRentFree", $event.target.value);
       }
     }
   })])]), _vm._v(" "), _c("div", {
@@ -3219,6 +3629,59 @@ var render = function render() {
       input: function input($event) {
         if ($event.target.composing) return;
         _vm.$set(_vm.contract, "area", $event.target.value);
+      }
+    }
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    staticClass: "col-lg-2 control-label"
+  }, [_vm._v("Security Deposit(# of Months)")]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-4"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.contract.securityDeposit,
+      expression: "contract.securityDeposit"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.securityDeposit
+    },
+    on: {
+      input: [function ($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.contract, "securityDeposit", $event.target.value);
+      }, function ($event) {
+        return _vm.calcAdvanceSecurityAmout();
+      }]
+    }
+  })]), _vm._v(" "), _c("label", {
+    staticClass: "col-lg-2 control-label"
+  }, [_vm._v("Amount")]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-4"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.contract.advanceSecurityAmount,
+      expression: "contract.advanceSecurityAmount"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      disabled: "",
+      type: "text"
+    },
+    domProps: {
+      value: _vm.contract.advanceSecurityAmount
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.contract, "advanceSecurityAmount", $event.target.value);
       }
     }
   })])]), _vm._v(" "), _c("div", {
@@ -3278,67 +3741,62 @@ var render = function render() {
     staticClass: "form-group"
   }, [_c("label", {
     staticClass: "col-lg-2 control-label"
-  }, [_vm._v("Security Deposit(# of Months)")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("Escalation Percent")]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-4"
   }, [_c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.contract.securityDeposit,
-      expression: "contract.securityDeposit"
+      value: _vm.contract.escalationPercent,
+      expression: "contract.escalationPercent"
     }],
     staticClass: "form-control",
     attrs: {
       type: "text"
     },
     domProps: {
-      value: _vm.contract.securityDeposit
-    },
-    on: {
-      input: [function ($event) {
-        if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "securityDeposit", $event.target.value);
-      }, function ($event) {
-        return _vm.calcAdvanceSecurityAmout();
-      }]
-    }
-  })]), _vm._v(" "), _c("label", {
-    staticClass: "col-lg-2 control-label"
-  }, [_vm._v("Amount")]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-4"
-  }, [_c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.contract.advanceSecurityAmount,
-      expression: "contract.advanceSecurityAmount"
-    }],
-    staticClass: "form-control",
-    attrs: {
-      disabled: "",
-      type: "text"
-    },
-    domProps: {
-      value: _vm.contract.advanceSecurityAmount
+      value: _vm.contract.escalationPercent
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "advanceSecurityAmount", $event.target.value);
+        _vm.$set(_vm.contract, "escalationPercent", $event.target.value);
       }
     }
   })])])])])]), _vm._v(" "), _c("div", {
     staticClass: "text-right"
   }, [_c("button", {
+    on: {
+      click: function click($event) {
+        return _vm.checkContractDetail();
+      }
+    }
+  }, [_vm._v("click")]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     on: {
       click: function click($event) {
-        return _vm.checkContract();
+        return _vm.populateContractTable();
       }
     }
-  }, [_vm._v("Create Contract "), _c("i", {
+  }, [_vm._v("Save Contract"), _c("i", {
     staticClass: "icon-arrow-right14 position-right"
-  })])])])])])]);
+  })])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "panel-body"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-lg-12"
+  }, [_c("div", {
+    staticClass: "table-responsive"
+  }, [_c("table", {
+    staticClass: "table table-hover table-xxs",
+    attrs: {
+      id: "contractTbl",
+      name: "contractTbl"
+    }
+  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.contractDetails, function (contractDetail, index) {
+    return _c("tr", [_c("td", [_vm._v(_vm._s(contractDetail.yearNum))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.yearFrom))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.yearTo))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.escalationPercent))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.rentAmount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.vatAmount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.ewtAmount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.netDueAmount))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractDetail.yearlyRent))])]);
+  }), 0)])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -3359,7 +3817,11 @@ var staticRenderFns = [function () {
     staticClass: "text-semibold"
   }, [_c("i", {
     staticClass: "icon-reading position-left"
-  }), _c("b", [_vm._v("Contract Detail")])]);
+  }), _c("b", [_vm._v("Contract Detailss")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Year")]), _vm._v(" "), _c("th", [_vm._v("Year Start")]), _vm._v(" "), _c("th", [_vm._v("Year End")]), _vm._v(" "), _c("th", [_vm._v("Escalation Percent")]), _vm._v(" "), _c("th", [_vm._v("Rent")]), _vm._v(" "), _c("th", [_vm._v("VAT To")]), _vm._v(" "), _c("th", [_vm._v("EWT")]), _vm._v(" "), _c("th", [_vm._v("NET")]), _vm._v(" "), _c("th", [_vm._v("Yearly Rent")])])]);
 }];
 render._withStripped = true;
 
@@ -74033,6 +74495,8 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 // import Select2 from 'v-select2-component';
+// import TypeaheadAutocomplete from "typeahead-autocomplete";
+// import Vue from 'vue'
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
@@ -74050,8 +74514,6 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
 Vue.component('lessor-component', __webpack_require__(/*! ./components/Lessor.vue */ "./resources/js/components/Lessor.vue")["default"]);
 Vue.component('contract-component', __webpack_require__(/*! ./components/contractComponent.vue */ "./resources/js/components/contractComponent.vue")["default"]);
-
-// Vue.component('Select2', Select2);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -14,7 +14,9 @@
         <!-- <script src="{{ mix('/js/app.js') }}"></script> -->
         <script src="{{ asset('js/app.js') }}" defer></script>
         
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script> -->
+        <script src="{{asset('assets/axios/axios.min.js')}}"></script>
+
       
         <link href="{{asset('assets/images/logo.png')}}" rel="shortcut icon" type="image/x-icon" sizes="196x196">
         <link href=" {{asset('assets/css/icons/icomoon/styles.css')}}" rel="stylesheet" type="text/css">
@@ -23,13 +25,10 @@
         <link href="{{asset('assets/css/components.css')}}" rel="stylesheet" type="text/css">
         <link href="{{asset('assets/css/minified/colors.min.css')}}" rel="stylesheet" type="text/css">
         <link href="{{asset('assets/css/icons/fontawesome/styles.min.css')}}" rel="stylesheet" type="text/css">
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="{{asset('assets/sweetalert2/dist/sweetalert2.min.css')}}" rel="stylesheet" type="text/css">
+        
 
 
-        <!-- /global stylesheets -->
-
-
-        <!-- Core JS files -->
         <script type="text/javascript" src=" {{asset('assets/js/plugins/loaders/pace.min.js')}}"></script>
         <!-- <script type="text/javascript" src="{{asset('assets/js/core/libraries/jquery.min.js')}}"></script> -->
         <!-- <script type="text/javascript" src="{{asset('assets/js/core/libraries/jquery_ui/jquery-ui.js')}}"></script> -->
@@ -38,7 +37,7 @@
         <script type="text/javascript" src="{{asset('assets/js/core/libraries/bootstrap.min.js')}}"></script>
         <script type="text/javascript" src="{{asset('assets/js/plugins/loaders/blockui.min.js')}}"></script>
         <script type="text/javascript" src="{{asset('assets/sweetalert2/dist/sweetalert2.all.min.js')}}"></script>
-        <script type="text/javascript" src="{{asset('assets/sweetalert2/dist/sweetalert2.min.css')}}"></script>
+        <!-- <script type="text/javascript" src="{{asset('assets/sweetalert2/dist/sweetalert2.min.css')}}"></script> -->
 
 
         <!-- /core JS files -->
@@ -75,10 +74,10 @@
  
        
         
-        
+<!--         
         <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
         <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-      
+       -->
           <style>
 /*            .footer {
                 position: fixed;
