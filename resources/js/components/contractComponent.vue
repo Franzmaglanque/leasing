@@ -20,9 +20,47 @@
         </div>
         </div> -->
 
+        <button  @click="showCreateContractForm()" class="btn btn-success">Create Contract<i class="icon-arrow-right14 position-right"></i></button>
 
 
-        <form class="form-horizontal" action="#" >
+<br><br>
+        <table v-show="contractTable" id="contractListTbl" name="contractListTbl" class="table table-hover table-xxs">
+            <thead>
+                <tr>
+                    <th style="display:none;">ID</th>
+                    <th>Lessor</th>
+                    <th>Payee</th>
+                    <th>Store</th>
+                    <th>Lease Type</th>
+                    <th>Monthly Rent</th>
+                    <th>Contract Start</th>
+                    <th>Contract END</th>
+                    <th>Escalation Percent</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- :id="index"  <tr v-for="(contractDetail,index) of contractDetails"> -->
+                <tr v-for="contractList of contractLists">
+                    <td style="display:none;">{{contractList.headerID}}</td>
+
+                    <td>{{contractList.lessorName}}</td>
+                    <td>{{contractList.vendorCode}}</td>
+                    <td>{{contractList.storeCode}}</td>
+                    <td>{{contractList.leaseType}}</td>
+                    <td>{{contractList.monthlyRent}}</td>
+                    <td>{{contractList.contractDateFrom}}</td>
+                    <td>{{contractList.contractDateTo}}</td>   
+                    <td>{{contractList.escalationPercent}}%</td>   
+                </tr>
+            </tbody>
+        </table>
+
+
+
+
+
+        <form v-if="createContractForm" class="form-horizontal" action="#" >
 
             <div class="panel panel-flat">
                 <div class="panel-heading">
@@ -47,7 +85,8 @@
                                         
                                         <Select2 id="lessor"
                                          v-model="contract.lessor" 
-                                         :options="lessors"/>
+                                         :options="lessors"
+                                         />
                                          <!-- <vue-select class="vue-select1" name="select1" :options="lessors" :model.sync="contract.lessor"></vue-select> -->
                                           <!-- <Select2 v-model="myValue" :options="lessors" :settings="{ settingOption: value, settingOption: value }" @change="myChangeEvent($event)" @select="mySelectEvent($event)" /> -->
                                         <!-- <select  v-model="contract.lessor" data-placeholder="Select Lessor" class="form-control js-example-basic-single">
@@ -231,15 +270,84 @@
                                     <div class="col-lg-4">
                                         <input  v-model="contract.escalationPercent" type="text" class="form-control">
                                     </div>
-                                   
+                                    <label class="col-lg-2 control-label">Provisions</label>
+                                    <div class="col-lg-4">
+                                        <!-- <select  data-placeholder="Select Lease type" class="select form-control">
+                                            <option v-for="provision in provisions" :value="provision.id    ">{{provision.provisionDescription}}</option>    
+                                        </select> -->
+                                        <Select2
+                                         v-model="contract.provisions" 
+                                         @change="showProvisionInput()"
+                                         :options="provisions"
+                                         :settings="{ multiple: true}"
+                                         />
+                                    </div>
+                                </div>
+
+                                <!-- <div class="form-group">
+                                    <label class="col-lg-2 control-label">Provisions</label>
+                                    <div class="col-lg-4">
+
+                                        <Select2
+                                         v-model="contract.provisions" 
+                                         @change="testing123()"
+                                         :options="provisions"
+                                         :settings="{ multiple: true}"
+                                         />
+                                    </div>
+                                </div> -->
+
+                     
+
+                                <div v-if="showProvision.cusa" class="form-group">
+                                    <label class="col-lg-2 control-label">Cusa</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.cusa" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div v-if="showProvision.airconCharge" class="form-group">
+                                    <label class="col-lg-2 control-label">Aircon</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.aircon" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div v-if="showProvision.marketing" class="form-group">
+                                    <label class="col-lg-2 control-label">Marketing Support</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.marketingSupport" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div v-if="showProvision.pestControlCharge" class="form-group">
+                                    <label class="col-lg-2 control-label">Pest Control</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.pestControlCharge" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div v-if="showProvision.donation" class="form-group">
+                                    <label class="col-lg-2 control-label">Donation</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.donation" type="text" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div v-if="showProvision.stpSystemMaintenance" class="form-group">
+                                    <label class="col-lg-2 control-label">STP System Maintenance</label>
+                                    <div class="col-lg-4">
+                                        <input  v-model="contract.stpMaintenance" type="text" class="form-control">
+                                    </div>
                                 </div>
                             </fieldset>
                         </div>          
                     </div>
                     <div class="text-right">
-                        <button @click="checkContractDetail()">click</button>
-                        <button  @click="populateContractTable()" class="btn btn-primary">Save Contract<i class="icon-arrow-right14 position-right"></i></button>
-                        <!-- <button  @click="saveContract()" class="btn btn-primary">Generate<i class="icon-arrow-right14 position-right"></i></button> -->
+                        <button @click="checkprovision()">click</button>
+                        <button @click="hideCreateContractForm()" class="btn bg-danger-700 btn-labeled"><b><i class="icon-cross"></i></b>Cancel</button>
+                        <!-- <button  @click="populateContractTable()" class="btn bg-primary-700 btn-labeled"><b><i class="icon-database-insert"></i></b>Save Contract</button> -->
+                        <button  @click="saveContract()" class="btn btn-primary">Generate<i class="icon-arrow-right14 position-right"></i></button>
                         
                         <!-- <button  @click="checkContract()" class="btn btn-primary">Create Contract <i class="icon-arrow-right14 position-right"></i></button> -->
                         
@@ -249,7 +357,7 @@
         </form>
 
 
-        <div class="panel-body">
+        <!-- <div class="panel-body">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="table-responsive">
@@ -270,13 +378,11 @@
                             </thead>
 
                             <tbody>
-                                <!-- :id="index"  <tr v-for="(contractDetail,index) of contractDetails"> -->
+                             
                                 <tr v-for="(contractDetail,index) of contractDetails">
-
                                     <td>{{contractDetail.yearNum}}</td>
                                     <td>{{contractDetail.yearFrom}}</td>
                                     <td>{{contractDetail.yearTo}}</td>
-                                    <!-- <td><input @input="recompute(contractDetail,index)" :id="index" type="text" class="form-control"></td> -->
                                     <td>{{contractDetail.escalationPercent}}</td>
                                     <td>{{contractDetail.rentAmount}}</td>
                                     <td>{{contractDetail.vatAmount}}</td>
@@ -290,28 +396,24 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </template>
 
 <script>
 import Select2 from 'v-select2-component';
-
-
 // import TypeaheadAutocomplete from "typeahead-autocomplete";
     export default {
-        components: {
-            Select2,
-       
-        },
+        components: { Select2},
         // "vue-select": require("vue-select"),
-
         props: ['vendors'],
-
         data: function() {
             return {
-                contractTable:false,
+                dt:null,
+                createContractForm:false,
+                contractTable:true,
+                contractLists:[],
                 contractDetails:[],
                 lessors:[],
                 subjectLease:[],
@@ -319,6 +421,7 @@ import Select2 from 'v-select2-component';
                 vendors_list:[],
                 provinces:[],
                 municipalities:[],
+                provisions:[],
                 contractDetail:{
                     yearNum:'',
                     yearFrom:'',
@@ -329,6 +432,14 @@ import Select2 from 'v-select2-component';
                     ewtAmount:'',
                     netDueAmount:'',
                     yearlyRent:'',
+                },
+                showProvision:{
+                    cusa:'',
+                    marketing:'',
+                    airconCharge:'',
+                    pestControlCharge:'',
+                    stpSystemMaintenance:'',
+                    donation:'',
                 },
                 contract:{
                     id:null,
@@ -355,39 +466,157 @@ import Select2 from 'v-select2-component';
                     municipality:'',
                     rentFreeIncluded: false,
                     escalationPercent:'',
+                    provisions:null,
+                    cusa:'',
+                    aircon:'',
+                    marketingSupport:'',
+                    pestControl:'',
+                    donation:'',
+                    stpMaintenance:'',
+
                 },
                 errors:{}
             };
         },
     
        mounted(){
-        // $('#contractTbl').DataTable();
             this.fetchLessor();
             this.fetchVendor();
             this.fetchProvince();
             this.fetchStore();
             this.fetchLeaseType();
-         
+            this.fetchContracts();
+            this.fetchProvisions();
        },
     
        computed:{
        },
-       methods:{
-        checkContractDetail(){
-            console.log(JSON.stringify(this.contractDetails));
+       watch: {             
+
+            contractLists(val) {
+                this.dt.destroy();
+                this.$nextTick(() => {
+                    this.dt = $("#contractListTbl").DataTable();
+                });
+            }               
+
         },
+       methods:{
+        showProvisionInput(){
+            if(this.contract.provisions.includes('1')){
+                this.showProvision.cusa = true
+            }else{
+                this.showProvision.cusa = false
+            }
+
+            if(this.contract.provisions.includes('2')){
+                this.showProvision.marketing = true
+            }else{
+                this.showProvision.marketing = false
+            }
+
+            if(this.contract.provisions.includes('3')){
+                this.showProvision.airconCharge = true
+            }else{
+                this.showProvision.airconCharge = false
+            }
+
+            if(this.contract.provisions.includes('4')){
+                this.showProvision.pestControlCharge = true
+            }else{
+                this.showProvision.pestControlCharge = false
+            }
+
+            if(this.contract.provisions.includes('5')){
+                this.showProvision.stpSystemMaintenance = true
+            }else{
+                this.showProvision.stpSystemMaintenance = false
+            }
+
+            if(this.contract.provisions.includes('6')){
+                this.showProvision.donation = true
+            }else{
+                this.showProvision.donation = false
+            }
+            
+         
+        },
+        checkprovision(){
+            console.log(JSON.stringify(this.contract));
+            // console.log(JSON.stringify(this.contract.provisions));
+        },
+        fetchProvisions(){
+            axios.get('/api/selectprovisions')
+               .then(res =>{
+                this.provisions = res.data
+                
+                // console.log(JSON.stringify(this.lessors));
+               })
+               .catch(err =>{
+                  console.log(err.response)
+               }); 
+        },
+
+        fetchContracts(){
+            axios.get('/api/contractLists')
+               .then(res =>{
+                this.dt = $('#contractListTbl').DataTable();
+                setTimeout(() => this.contractLists = res.data);
+                // this.contractLists = res.data
+              
+               })
+               .catch(err =>{
+                  console.log(err.response)
+               }); 
+
+               $('#contractListTbl tbody').off('click', 'tr');
+            $('#contractListTbl tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    // $("#editBtn").attr('disabled', true);
+                }else{
+                    $('#contractListTbl tbody tr.selected').removeClass('selected');
+                    $(this).toggleClass('selected');
+                    // $("#editBtn").attr('disabled', false);
+                }
+            }); 
+        },
+
+
+
+        showCreateContractForm(){
+            this.createContractForm = true;
+            this.dt.destroy();
+            this.contractTable = false;
+            
+        },
+
+        hideCreateContractForm(){
+            this.createContractForm = false;
+            this.contractTable = true;
+            this.fetchContracts();
+        },
+
         //&& $("#address").val() != null && $("#address").val() != ""   
         populateContractTable(){
-           
            if( $("#lessor").val() != null && $("#lessor").val() != "" ){
             console.log($("#lessor").val()+"asdasd");
             axios.post('/api/contract',this.contract)
                .then(res =>{
+
                 // console.log(res.request.responseText);
-                this.contractTable = true;
+                // this.contractTable = true;
                 this.contractDetails = res.data.data;
-                // $('#contractTbl').DataTable();
                 console.log(res.request);
+                Swal.fire({
+                        title:'Good job!',
+                        text: 'You clicked the button!',
+                        icon:'success'
+                });
+                this.hideCreateContractForm();
+                this.clearContract();
+
+
                 // if(res.request.responseText == 1){
                 // if(typeof res.request.responseText != "undefined"){
 
@@ -472,45 +701,11 @@ import Select2 from 'v-select2-component';
      
         },
 
-        populateContractTable_old(){
-            $('#contractTbl').dataTable({
-                destroy: true,
-                'ajax': {
-                    type: 'GET',
-                    // dataType: 'json',
-                    contentType: 'application/json: charset=utf-8',
-                    url: '/api/fetchContract',
-                    dataSrc: 'data'
-                },
-                drawCallback: function () {
-                    // callCustomClass();
-                },
-                processing: false,
-                // serverSide: true,
-                searching: true,
-                stateSave: false,
-                columns: [
-                    {title: 'ID', name: 'id', index: 'id', align: 'center', sortable: true, search: true, data: 'id'},
-                    {title: 'Lessor Name', name: 'lessorName', index: 'lessorName', align: 'center', sortable: true, search: true, data: 'lessorName'},
-                    {title: 'Lessor Status', name: 'lessorStatus', index: 'lessorStatus', align: 'center', sortable: true, search: true, data: 'lessorStatus'},
-                    // {title: 'Lessor Status', name: 'lessorStatus', index: 'lessorStatus', align: 'center', sortable: true, search: true, data: 'lessorStatusChanged'},
-                    {title: 'User Added', name: 'userAdded', index: 'userAdded', align: 'center', sortable: true, search: true, data: 'userAdded'},
-                    {title: 'Date Added', name: 'dateAdded', index: 'dateAdded', align: 'center', sortable: true, search: true, data: 'dateAdded'},
-                    {title: 'User Updated', name: 'userUpdated', index: 'userUpdated', align: 'center', sortable: true, search: true, data: 'userUpdated'},
-                    {title: 'Date Updated', name: 'dateUpdated', index: 'dateUpdated', align: 'center', sortable: true, search: true, data: 'dateUpdated'},
-                ],
-            }); 
-        },
-
         recompute(contractDetail,index){
             // console.log(this.contractDetails);
             // console.log(JSON.stringify(contractDetail));
             // this.contractDetail = Object.assign({},contractDetail);
-            var escalation = $("#"+index).val();
-
-            //  console.log(this.contractDetails[index]);
-            // var count =index;
-         
+            var escalation = $("#"+index).val();         
 
             for(var count =index; count<= this.contractDetails.length-1;count++)
             {
@@ -612,20 +807,6 @@ import Select2 from 'v-select2-component';
             // console.log(newContractPeriodTrom);
         },
 
-        // calculate number of year from contract start and end
-        calculateYear(){
-            // const foo = new Date(this.contract.contractPeriodTo).getTime() - new Date(this.contract.contractPeriodFrom).getTime();
-            // const petsa = new Date(foo);
-            // this.contract.numYears = Math.abs(petsa.getUTCFullYear() - 1970);
-
-            // var yearFrom = new Date(this.contract.contractPeriodFrom).getFullYear();
-            // var yearTo = new Date(this.contract.contractPeriodTo).getFullYear();
-            // this.contract.numYears = yearTo - yearFrom;
-            // console.log(this.contract.numYears);
-
-            // console.log(yearTo.getFullYear());
-        },
-
         saveContract(){
             axios.post('/api/contract',this.contract)
                .then(res =>{
@@ -634,6 +815,14 @@ import Select2 from 'v-select2-component';
                 //     text: 'You clicked the button!',
                 //     icon:'success'
                 //   });
+
+                Swal.fire({
+                    title:'Good job!',
+                    text: 'You clicked the button!',
+                    icon:'success'
+                  });
+                //   this.clearContract();
+
                 console.log(res.request.responseText);
 
                 if(res.request.responseText == 1){
@@ -642,13 +831,10 @@ import Select2 from 'v-select2-component';
                     text: 'You clicked the button!',
                     icon:'success'
                   });
+                  this.clearContract();
                 }else{
                     this.errors = JSON.parse(res.request.responseText);
                 }
-                // console.log(res.request.responseText);
-                // this.clearContract();
-                // console.log(this.errors);
-                // console.log(this.errors['lessor']);
                })
                .catch(err =>{
                   console.log(err.response)
@@ -727,7 +913,6 @@ import Select2 from 'v-select2-component';
              .then(res => {
                 this.vendors_list = res.data;
              });
-            // this.vendor = this.vendors_list;
         },
 
         setProvCode(event){

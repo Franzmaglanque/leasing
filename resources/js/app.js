@@ -25,6 +25,7 @@ window.Vue = require('vue');
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('lessor-component', require('./components/Lessor.vue').default);
 Vue.component('contract-component', require('./components/contractComponent.vue').default);
+Vue.component('provision-component', require('./components/provisionComponent.vue').default);
 
 
 

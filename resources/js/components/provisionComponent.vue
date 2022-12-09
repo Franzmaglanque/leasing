@@ -10,7 +10,7 @@
                             <!-- <legend class="text-bold text-success-800">Manage Users</legend>
                             <h2 class="panel-title"></h2>
                             <div class="heading-btn"> -->
-                            <legend class="text-bold text-success-800">Manage Lessors</legend>
+                            <legend class="text-bold text-success-800">Manage Provisions</legend>
                             <h2 class="panel-title"></h2>
                             <div class="heading-btn">
                                 <!-- <label class="text-right"><i class="icon-store2"></i>&nbsp;<b>
@@ -36,7 +36,7 @@
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
                                        
-                                        <table id="lessorTbl" name="lessorTbl" class="table table-hover table-xxs">
+                                        <table id="provisionTbl" name="provisionTbl" class="table table-hover table-xxs">
 
                                         </table>
                                     </div>
@@ -55,7 +55,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
             <div class="modal-header bg-slate-600">
-                <h5 class="modal-title" id="createModalLabel">Add Lessor</h5>
+                <h5 class="modal-title" id="createModalLabel">Add Provision</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeCreateModal()">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -63,9 +63,9 @@
             <div class="modal-body">
                 <form action="">
                     <div class="form-group">
-                        <label class="col-lg-2 control-label">Lessor Name:</label>
+                        <label class="col-lg-2 control-label">Provision Name:</label>
                         <div class="col-lg-6">
-                            <input  v-model="lessor.name" type="text" class="form-control">
+                            <input  v-model="provision.name" type="text" class="form-control">
                         </div>
                     </div>
                 </form>
@@ -73,52 +73,69 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeCreateModal()">Close</button>
-                <button @click="createLessor()" type="button" class="btn btn-primary">Create Lessor</button>
+                <button @click="createProvision()" type="button" class="btn btn-primary">Create Provision</button>
             </div>
             </div>
         </div>
     </div>
 
       <!-- Update Lessor Modal -->
-  <div class="modal fade "  id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+<div class="modal fade "  id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-        <div class="modal-header bg-slate-600">
-            <h5 class="modal-title" id="updateModalLabel">Edit Lessor</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeEditModal()">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form action="">
-                <div class="form-group">
-                    <label class="col-lg-2 control-label">Lessor Name:</label>
-                    <div class="col-lg-10">
-                        <input  v-model="lessor.name" type="text" class="form-control" >
+            <div class="modal-header bg-slate-600">
+                <h5 class="modal-title" id="updateModalLabel">Edit Provision</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeEditModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="">
+                    <div class="form-group">
+                        <label class="col-control-label">Provision Name:</label>
+              
+                            <input  v-model="provision.name" type="text" class="form-control" >
+                
                     </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Provision Status:</label>
+                        
+                            <select v-model="provision.status" class="select form-control">
+                                <option value="A">Active</option>
+                                <option value="I">Inactive</option>
+                            </select>
+                
+                    </div>
+                </form>
+                <br><br>
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-secondary" @click="closeEditModal()" data-dismiss="modal">Close</button>
+                <button @click="updateProvision()" type="button" class="btn btn-primary">Update Provision</button>
+            </div>
+
+            <!-- <div class="modal-body">
+                <form>
+                <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input  v-model="provision.name" type="text" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label class="col-lg-2 control-label">Lessor Status:</label>
-                    <div class="col-lg-10">
-                        <!-- <input  v-model="lessor.name" type="text" class="form-control" > -->
-                        <!-- <input  v-model="lessor.name" type="text" class="form-control"> -->
-                        <select v-model="lessor.status" class="select form-control">
+                        <label for="message-text" class="col-form-label">Provision Status:</label>
+                        <select v-model="provision.status" class="select form-control">
                             <option value="A">Active</option>
                             <option value="I">Inactive</option>
                         </select>
-
-                    </div>
                 </div>
-            </form>
-            <br><br>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeEditModal()" data-dismiss="modal">Close</button>
-            <button @click="updateLessor()" type="button" class="btn btn-primary">Update Lessor</button>
-        </div>
-        </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @click="closeEditModal()" data-dismiss="modal">Close</button>
+                <button @click="updateProvision()" type="button" class="btn btn-primary">Update Provision</button>
+            </div> -->
         </div>
     </div>
+</div>
 </div>
     </div>
 </template>
@@ -131,7 +148,7 @@ let lessorTable;
     export default {
         data: function() {
             return {
-                lessor:{
+                provision:{
                     id:null,
                     name:'',
                     status:'',
@@ -140,20 +157,20 @@ let lessorTable;
             };
         },
         mounted(){
-            this.fetchLessorTable();
+            this.fetchProvisionTable();
        },
        computed:{
 
        },
        methods:{
-      fetchLessorTable(){
-            lessorTable = $('#lessorTbl').dataTable({
+      fetchProvisionTable(){
+            lessorTable = $('#provisionTbl').dataTable({
                 destroy: true,
                 'ajax': {
                     type: 'GET',
                     // dataType: 'json',
                     contentType: 'application/json: charset=utf-8',
-                    url: '/api/lessor',
+                    url: '/api/provisions',
                     dataSrc: 'data'
                 },
                 drawCallback: function () {
@@ -165,33 +182,30 @@ let lessorTable;
                 stateSave: false,
                 columns: [
                     // {title: 'ID', name: 'id', index: 'id', align: 'center', sortable: true, search: true, data: 'id'},
-                    {title: 'Lessor Name', name: 'lessorName', index: 'lessorName', align: 'center', sortable: true, search: true, data: 'lessorName'},
-                    {title: 'Lessor Status', name: 'lessorStatus', index: 'lessorStatus', align: 'center', sortable: true, search: true, data: 'lessorStatus'},
-                    // {title: 'Lessor Status', name: 'lessorStatus', index: 'lessorStatus', align: 'center', sortable: true, search: true, data: 'lessorStatusChanged'},
+                    {title: 'Provision Name', name: 'provisionName', index: 'provisionName', align: 'center', sortable: true, search: true, data: 'provisionDescription'},
+                    {title: 'Provision Status', name: 'provisionStatus', index: 'provisionStatus', align: 'center', sortable: true, search: true, data: 'provisionStatusChanged'},
                     {title: 'User Added', name: 'userAdded', index: 'userAdded', align: 'center', sortable: true, search: true, data: 'userAdded'},
                     {title: 'Date Added', name: 'dateAdded', index: 'dateAdded', align: 'center', sortable: true, search: true, data: 'dateAdded'},
                     {title: 'User Updated', name: 'userUpdated', index: 'userUpdated', align: 'center', sortable: true, search: true, data: 'userUpdated'},
                     {title: 'Date Updated', name: 'dateUpdated', index: 'dateUpdated', align: 'center', sortable: true, search: true, data: 'dateUpdated'},
                 ],
-                // rowId: 'id',
+                rowId: 'id',
             });   
-        $('#lessorTbl tbody').off('click', 'tr');
-            $('#lessorTbl tbody').on('click', 'tr', function () {
+        $('#provisionTbl tbody').off('click', 'tr');
+            $('#provisionTbl tbody').on('click', 'tr', function () {
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
                     $("#editBtn").attr('disabled', true);
                 }else{
-                    $('#lessorTbl tbody tr.selected').removeClass('selected');
+                    $('#provisionTbl tbody tr.selected').removeClass('selected');
                     $(this).toggleClass('selected');
                     $("#editBtn").attr('disabled', false);
                 }
             }); 
         },
         
-        createLessor(){
-            // console.log(JSON.stringify(this.contract));
-            // console.log(JSON.stringify(this.lessor));
-            axios.post('/api/lessor',this.lessor)
+        createProvision(){
+            axios.post('/api/provisions',this.provision)
                .then(res =>{
                   // console.log(res)
                 //   $('#createModal').modal('hide');
@@ -201,15 +215,16 @@ let lessorTable;
                     text: 'You clicked the button!',
                     icon:'success'
                   });
-                  this.fetchLessorTable();
+                  this.fetchProvisionTable();
+                  this.clearProvision();
                })
                .catch(err =>{
                   console.log(err.response)
                });
         },
 
-        updateLessor(){
-            axios.patch('/api/lessor',this.lessor)
+        updateProvision(){
+            axios.patch('/api/provisions',this.provision)
                .then(res =>{
                   // console.log(res)
                 //   $('#updateModal').modal('hide');
@@ -219,7 +234,7 @@ let lessorTable;
                     text: 'You clicked the button!',
                     icon:'success'
                   });
-                  this.fetchLessorTable();
+                  this.fetchProvisionTable();
                   $("#editBtn").attr('disabled', true);
                })
                .catch(err =>{
@@ -230,19 +245,19 @@ let lessorTable;
         showSelected(){
             // console.log('test');
             // console.log(JSON.stringify(this.lessor))
-            var table = $('#lessorTbl').DataTable();
-            this.lessor.id = table.row('.selected').data().id;
-            this.lessor.name = table.row('.selected').data().lessorName;
-            this.lessor.status = table.row('.selected').data().lessorStatus;
+            var table = $('#provisionTbl').DataTable();
+            this.provision.id = table.row('.selected').data().id;
+            this.provision.name = table.row('.selected').data().lessorName;
+            this.provision.status = table.row('.selected').data().lessorStatus;
         },
 
         // Show Create Lessor Modal 
         showAddNewModal(){
             // console.log($('#createModal').modal());
-            var table = $('#lessorTbl').DataTable();
-            var count = table.rows('.selected').data().length;
-            console.log(table.rows('.selected').data()[0].id);
-            this.clearLessor();
+            // var table = $('#lessorTbl').DataTable();
+            // var count = table.rows('.selected').data().length;
+            // console.log(table.rows('.selected').data()[0].id);
+            this.clearProvision();
              $('#createModal').addClass("in show");
             // let thisModal= ref('createModal');
             // thisModal.value.show();
@@ -250,10 +265,12 @@ let lessorTable;
        
         // Show Edit Lessor Modal
         showEditModal(){
-            var table = $('#lessorTbl').DataTable();
-            this.lessor.id = table.row('.selected').data().id;
-            this.lessor.name = table.row('.selected').data().lessorName;
-            this.lessor.status = table.row('.selected').data().lessorStatus;
+            var table = $('#provisionTbl').DataTable();
+            console.log(table.row('.selected').data());
+            this.provision.id = table.row('.selected').data().id;
+            this.provision.name = table.row('.selected').data().provisionDescription;
+            this.provision.status = table.row('.selected').data().provisionStatus;
+            // console.log(this.provision);
             // $('#updateModal').modal('show');
             $('#updateModal').addClass("in show");
 
@@ -269,10 +286,10 @@ let lessorTable;
        },
        
         // Clear Lessor Details
-        clearLessor(){
-            this.lessor.name='';
-            this.lessor.status='';
-            this.lessor.id = null;
+        clearProvision(){
+            this.provision.name='';
+            this.provision.status='';
+            this.provision.id = null;
           }
        },
 

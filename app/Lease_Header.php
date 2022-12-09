@@ -58,6 +58,7 @@ class Lease_Header extends Model
             'dateAdded' => now(),       
             'userAdded' => session('employee_number'),       
             'leaseStatus' =>'H', 
+            'escalationPercent' => $data['escalationPercent'],
         ]);
 
         return $header_contract;

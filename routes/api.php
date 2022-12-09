@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::middleware(['cors'])->group(function () {
 
     // Contract
+    Route::get('/contractLists','contractController@getContracts');
     Route::get('/contract','contractController@getsubjectlease');
     Route::get('/store','contractController@getstore');
     Route::get('/vendor','contractController@getVendor');
@@ -41,6 +42,13 @@ Route::middleware(['cors'])->group(function () {
 
     // Lease
     Route::get('/lease','leaseController@getLeaseType');
+
+    // Provisions
+    Route::get('/provisions','provisionController@getprovisions');
+    Route::get('/selectprovisions','provisionController@getSelectProvisions');
+
+    Route::post('/provisions','provisionController@createProvision');
+    Route::patch('/provisions','provisionController@updateProvision');
 
 
 
