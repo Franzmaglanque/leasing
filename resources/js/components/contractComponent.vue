@@ -36,6 +36,8 @@
                     <th>Contract Start</th>
                     <th>Contract END</th>
                     <th>Escalation Percent</th>
+                    <th>Action</th>
+
                 </tr>
             </thead>
 
@@ -51,7 +53,9 @@
                     <td>{{contractList.monthlyRent}}</td>
                     <td>{{contractList.contractDateFrom}}</td>
                     <td>{{contractList.contractDateTo}}</td>   
-                    <td>{{contractList.escalationPercent}}%</td>   
+                    <td>{{contractList.escalationPercent}}%</td>
+                    <td><button @click="exportContract()" class="btn btn-primary">View Contract</button></td>
+
                 </tr>
             </tbody>
         </table>
@@ -323,7 +327,7 @@
                                 <div v-if="showProvision.pestControlCharge" class="form-group">
                                     <label class="col-lg-2 control-label">Pest Control</label>
                                     <div class="col-lg-4">
-                                        <input  v-model="contract.pestControlCharge" type="text" class="form-control">
+                                        <input  v-model="contract.pestControl" type="text" class="form-control">
                                     </div>
                                 </div>
 
@@ -502,6 +506,9 @@ import Select2 from 'v-select2-component';
 
         },
        methods:{
+        exportContract(){
+            
+        },
         showProvisionInput(){
             if(this.contract.provisions.includes('1')){
                 this.showProvision.cusa = true
@@ -569,17 +576,17 @@ import Select2 from 'v-select2-component';
                   console.log(err.response)
                }); 
 
-               $('#contractListTbl tbody').off('click', 'tr');
-            $('#contractListTbl tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                    // $("#editBtn").attr('disabled', true);
-                }else{
-                    $('#contractListTbl tbody tr.selected').removeClass('selected');
-                    $(this).toggleClass('selected');
-                    // $("#editBtn").attr('disabled', false);
-                }
-            }); 
+            //    $('#contractListTbl tbody').off('click', 'tr');
+            // $('#contractListTbl tbody').on('click', 'tr', function () {
+            //     if ($(this).hasClass('selected')) {
+            //         $(this).removeClass('selected');
+            //         // $("#editBtn").attr('disabled', true);
+            //     }else{
+            //         $('#contractListTbl tbody tr.selected').removeClass('selected');
+            //         $(this).toggleClass('selected');
+            //         // $("#editBtn").attr('disabled', false);
+            //     }
+            // }); 
         },
 
 
@@ -831,7 +838,7 @@ import Select2 from 'v-select2-component';
                     text: 'You clicked the button!',
                     icon:'success'
                   });
-                  this.clearContract();
+                //   this.clearContract();
                 }else{
                     this.errors = JSON.parse(res.request.responseText);
                 }

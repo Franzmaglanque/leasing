@@ -309,6 +309,9 @@ let lessorTable;
   background-color: yellow;
 }
 
+table.dataTable thead tr {
+  background-color: slategrey;
+}
 
 /* .selected, .selected:hover{
     color: rgb(51, 33, 33);

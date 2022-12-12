@@ -2374,6 +2374,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    exportContract: function exportContract() {},
     showProvisionInput: function showProvisionInput() {
       if (this.contract.provisions.includes('1')) {
         this.showProvision.cusa = true;
@@ -2431,17 +2432,18 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (err) {
         console.log(err.response);
       });
-      $('#contractListTbl tbody').off('click', 'tr');
-      $('#contractListTbl tbody').on('click', 'tr', function () {
-        if ($(this).hasClass('selected')) {
-          $(this).removeClass('selected');
-          // $("#editBtn").attr('disabled', true);
-        } else {
-          $('#contractListTbl tbody tr.selected').removeClass('selected');
-          $(this).toggleClass('selected');
-          // $("#editBtn").attr('disabled', false);
-        }
-      });
+
+      //    $('#contractListTbl tbody').off('click', 'tr');
+      // $('#contractListTbl tbody').on('click', 'tr', function () {
+      //     if ($(this).hasClass('selected')) {
+      //         $(this).removeClass('selected');
+      //         // $("#editBtn").attr('disabled', true);
+      //     }else{
+      //         $('#contractListTbl tbody tr.selected').removeClass('selected');
+      //         $(this).toggleClass('selected');
+      //         // $("#editBtn").attr('disabled', false);
+      //     }
+      // }); 
     },
     showCreateContractForm: function showCreateContractForm() {
       this.createContractForm = true;
@@ -2672,7 +2674,7 @@ __webpack_require__.r(__webpack_exports__);
             text: 'You clicked the button!',
             icon: 'success'
           });
-          _this5.clearContract();
+          //   this.clearContract();
         } else {
           _this5.errors = JSON.parse(res.request.responseText);
         }
@@ -3405,7 +3407,14 @@ var render = function render() {
       staticStyle: {
         display: "none"
       }
-    }, [_vm._v(_vm._s(contractList.headerID))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.lessorName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.vendorCode))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.storeCode))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.leaseType))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.monthlyRent))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.contractDateFrom))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.contractDateTo))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.escalationPercent) + "%")])]);
+    }, [_vm._v(_vm._s(contractList.headerID))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.lessorName))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.vendorCode))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.storeCode))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.leaseType))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.monthlyRent))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.contractDateFrom))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.contractDateTo))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(contractList.escalationPercent) + "%")]), _vm._v(" "), _c("td", [_c("button", {
+      staticClass: "btn btn-primary",
+      on: {
+        click: function click($event) {
+          return _vm.exportContract();
+        }
+      }
+    }, [_vm._v("View Contract")])])]);
   }), 0)]), _vm._v(" "), _vm.createContractForm ? _c("form", {
     staticClass: "form-horizontal",
     attrs: {
@@ -4117,20 +4126,20 @@ var render = function render() {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.contract.pestControlCharge,
-      expression: "contract.pestControlCharge"
+      value: _vm.contract.pestControl,
+      expression: "contract.pestControl"
     }],
     staticClass: "form-control",
     attrs: {
       type: "text"
     },
     domProps: {
-      value: _vm.contract.pestControlCharge
+      value: _vm.contract.pestControl
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.contract, "pestControlCharge", $event.target.value);
+        _vm.$set(_vm.contract, "pestControl", $event.target.value);
       }
     }
   })])]) : _vm._e(), _vm._v(" "), _vm.showProvision.donation ? _c("div", {
@@ -4218,7 +4227,7 @@ var staticRenderFns = [function () {
     staticStyle: {
       display: "none"
     }
-  }, [_vm._v("ID")]), _vm._v(" "), _c("th", [_vm._v("Lessor")]), _vm._v(" "), _c("th", [_vm._v("Payee")]), _vm._v(" "), _c("th", [_vm._v("Store")]), _vm._v(" "), _c("th", [_vm._v("Lease Type")]), _vm._v(" "), _c("th", [_vm._v("Monthly Rent")]), _vm._v(" "), _c("th", [_vm._v("Contract Start")]), _vm._v(" "), _c("th", [_vm._v("Contract END")]), _vm._v(" "), _c("th", [_vm._v("Escalation Percent")])])]);
+  }, [_vm._v("ID")]), _vm._v(" "), _c("th", [_vm._v("Lessor")]), _vm._v(" "), _c("th", [_vm._v("Payee")]), _vm._v(" "), _c("th", [_vm._v("Store")]), _vm._v(" "), _c("th", [_vm._v("Lease Type")]), _vm._v(" "), _c("th", [_vm._v("Monthly Rent")]), _vm._v(" "), _c("th", [_vm._v("Contract Start")]), _vm._v(" "), _c("th", [_vm._v("Contract END")]), _vm._v(" "), _c("th", [_vm._v("Escalation Percent")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -8983,7 +8992,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n/* #lessorTable tbody tr.selected {\n    color: rgb(51, 33, 33);\n    background-color: #201c1c;\n} */\n.selected, .table-hover > tbody > th, .table-hover > tbody >  tr.selected {\n  background-color: yellow;\n}\n\n\n/* .selected, .selected:hover{\n    color: rgb(51, 33, 33);\n    background-color: red;\n} */\n\n/* .selected:hover {\n    background-color: yellow;\n} */\n", ""]);
+exports.push([module.i, "\n/* #lessorTable tbody tr.selected {\n    color: rgb(51, 33, 33);\n    background-color: #201c1c;\n} */\n.selected, .table-hover > tbody > th, .table-hover > tbody >  tr.selected {\n  background-color: yellow;\n}\ntable.dataTable thead tr {\n  background-color: slategrey;\n}\n\n/* .selected, .selected:hover{\n    color: rgb(51, 33, 33);\n    background-color: red;\n} */\n\n/* .selected:hover {\n    background-color: yellow;\n} */\n", ""]);
 
 // exports
 

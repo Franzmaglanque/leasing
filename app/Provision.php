@@ -45,7 +45,7 @@ class Provision extends Model
     }
 
 
-    public function save_lease_provision_sched($contract_header,$data,$i,$provisions,$data_whole){
+    public function save_lease_provision_sched($contract_header,$data,$i,$input_data,$provisions){
 
         $startDateFromDatabase = $data['data'][$i]['yearFrom'];
         $endDateFromDatabase = $data['data'][$i]['yearTo'];
@@ -85,53 +85,155 @@ class Provision extends Model
             // var_dump($output);
          }
 
-        $provisionAmount = $this->calculateProvision($provisions,$data);
+        
+
+        $provisionCount = count($input_data['provisions'])-1;
+        $amount = [];
+        $amount['cusa'] = 0;
+        $amount['marketingSupport'] = 0;
+        $amount['aircon'] = 0;
+        $amount['pestControl'] = 0;
+        $amount['stpMaintenance'] = 0;
+        $amount['donation'] = 0;
+        $amount['provisionsTotal']  = 0;
+        $amount['cusaVat'] = 0;
+
+        for($p=0;$p <= $provisionCount; $p++){
+            if($input_data['provisions'][$p] == 1){
+                $amount['cusa'] = $input_data['area'] * $input_data['cusa'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['cusa'];
+                // $amount['cusaVat'] = ($amount['cusaVat'] +$amount['cusa']) * 0.12;
+                // $amount['cusaEwt'] = (($amount['cusaEwt'] + $amount['cusa']) * -1) * 0.02;
+                // $amount['cusaNetDue'] = $amount['cusa'] +  $amount['cusaVat'] + $amount['cusaEwt'];
+            }
+            elseif($input_data['provisions'][$p] == 2){
+                $amount['marketingSupport'] = $input_data['area'] * $input_data['marketingSupport'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['marketingSupport'];
+                // $amount['marketVat'] =($amount['marketVat'] +$amount['marketingSupport']) * 0.12;
+                // $amount['marketEwt'] = (($amount['marketEwt'] + $amount['marketingSupport']) * -1) * 0.02;
+                // $amount['marketNetDue'] = $amount['marketingSupport'] +  $amount['marketVat'] + $amount['marketEwt'];
+            }
+          
+            elseif($input_data['provisions'][$p] == 3){
+                $amount['aircon'] = $input_data['area'] * $input_data['aircon'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['aircon'];
+                // $amount['airconVat'] =($amount['airconVat'] +$amount['aircon']) * 0.12;
+                // $amount['airconEwt'] =(($amount['airconEwt'] + $amount['aircon']) * -1) * 0.02;
+                // $amount['airconNetDue'] = $amount['aircon'] + $amount['airconVat'] + $amount['airconEwt'];
+            }
+
+            elseif($input_data['provisions'][$p] == 4){
+                $amount['pestControl'] = $input_data['area'] * $input_data['pestControl'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['pestControl'];
+                // $amount['pestControlVat'] = ($amount['pestControlVat'] +$amount['pestControl']) * 0.12;
+                // $amount['pestControlEwt'] =(($amount['pestControlEwt'] + $amount['pestControl']) * -1) * 0.02;
+                // $amount['pestNetDue'] = $amount['pestControl'] + $amount['pestControlVat'] + $amount['pestControlEwt'];
+            }
+            elseif($input_data['provisions'][$p] == 5){
+                $amount['stpMaintenance']= $input_data['area'] * $input_data['stpMaintenance'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['stpMaintenance'];
+                // $amount['stpVat'] = ($amount['stpVat'] +$amount['stpMaintenance']) * 0.12;
+                // $amount['stpEwt'] = (($amount['stpEwt'] + $amount['stpMaintenance']) * -1) * 0.02;
+                // $amount['stpNetDue'] = $amount['stpMaintenance'] + $amount['stpVat'] +  $amount['stpEwt'];
+            }
+            elseif($input_data['provisions'][$p] == 6){
+                $amount['donation'] = $input_data['area'] * $input_data['donation'];
+                // $amount['provisionsTotal'] = $amount['provisionsTotal'] +$amount['donation'];
+                // $amount['donationVat'] = 0;
+                // $amount['donationEwt'] = 0;
+                // $amount['donationNetDue'] = $amount['donation'];
+            }else{
+                $amount['cusa'] = 0;
+                $amount['marketingSupport'] = 0;
+                $amount['aircon'] = 0;
+                $amount['pestControl'] = 0;
+                $amount['stpMaintenance'] = 0;
+                $amount['donation'] = 0;
+            }
+        }
+        // $amount['vat'] = $amount['provisionsTotal'] * 0.12;
+        // $amount['ewt'] = ($amount['provisionsTotal'] * -1) * 0.02;
+        // $amount['netDue'] = $amount['vat'] + $amount['ewt'] + $amount['provisionsTotal'] + $amount['donation'];
+
+        // var_dump($amount);
+        // exit();
+        $provisionAmount = $this->calculateProvision($provisions,$input_data);
+        // var_dump( $provisionAmount);
+        // exit();
 
         $count = count($output)-1;
- 
             for($o=0;$o <= $count;$o++){
-                    $pvcompContract = DB::table('tbl_lease_provisions_schedule')->insert([
-                    'headerID' => $contract_header,
-                    'periodFrom' => $output[$o]['start'],
-                    'periodTo' => $output[$o]['end'],
-                    'durationCount' => $data['data'][$i]['yearNum'],
-                    'escalationPercent' => $data['data'][$i]['escalationPercent'],
-                    'rentAmount' => $data['data'][$i]['monthlyRent'],
-                    'vatAmount' => $data['data'][$i]['vatAmount'],
-                    'ewtAmount' => $data['data'][$i]['ewtAmount'],
-                    'netDueAmount' => floatval($data['data'][$i]['netDueAmount']),
-                    'provisionCode' => $provisions,
-                    'yearID' => $data['data'][$i]['yearNum'],
-                    'provisionAmount' => $provisionAmount,
-                ]);
+                    $pvcompContract = DB::table('tbl_lease_provisions_schedule')->insert(
+                    [
+                        'headerID' => $contract_header,
+                        'periodFrom' => $output[$o]['start'],
+                        'periodTo' => $output[$o]['end'],
+                        'durationCount' => $data['data'][$i]['yearNum'],
+                        'escalationPercent' => $data['data'][$i]['escalationPercent'],
+                        'rentAmount' => $data['data'][$i]['monthlyRent'],
+                        'vatAmount' => $provisionAmount['vatAmount'],
+                        'ewtAmount' => $provisionAmount['ewtAmount'],
+                        // 'netDueAmount' => floatval($provisionAmount['netDueAmount']),
+                        'netDueAmount' => $provisionAmount['netDueAmount'],
+
+                        'provisionCode' => $provisions,
+                        'yearID' => $data['data'][$i]['yearNum'],
+                        'provisionAmount' => $provisionAmount['amount'],
+
+                    ]);
             }
+
        return true;
+
     }
 
     public function calculateProvision($provisions,$data){
         if($provisions == 1){
             $cusa = [];
-            $cusa = $data['area'] * $data['cusa'];
+            $cusa['amount'] = $data['area'] * $data['cusa'];
+            $cusa['vatAmount'] = $cusa['amount'] * 0.12;
+            $cusa['ewtAmount'] = ($cusa['amount'] * -1) * 0.02;
+            $cusa['netDueAmount'] = $cusa['amount'] + $cusa['vatAmount'] + $cusa['ewtAmount'];
             return $cusa;
         }
         if($provisions == 2){
-            $marketing = $data['area'] * $data['marketingSupport'];
+            $marketing = [];
+            $marketing['amount'] = $data['area'] * $data['marketingSupport'];
+            $marketing['vatAmount'] = $marketing['amount'] * 0.12;
+            $marketing['ewtAmount'] = ($marketing['amount'] * -1) * 0.02;
+            $marketing['netDueAmount'] = $marketing['amount'] + $marketing['vatAmount'] + $marketing['ewtAmount'];
             return $marketing;
         }
-        if($provision == 3){
-            $aircon = $data['area'] * $data['aircon'];
+        if($provisions == 3){
+            $aircon = [];
+            $aircon['amount'] = $data['area'] * $data['aircon'];
+            $aircon['vatAmount'] = $aircon['amount'] * 0.12;
+            $aircon['ewtAmount'] = ($aircon['amount'] * -1) * 0.02;
+            $aircon['netDueAmount'] = $aircon['amount'] + $aircon['vatAmount'] + $aircon['ewtAmount'];
             return $aircon;
         }
-        if($provision == 4){
-            $pest = $data['area'] * $data['pestControl'];
+        if($provisions == 4){
+            $pest = [];
+            $pest['amount'] = $data['area'] * $data['pestControl'];
+            $pest['vatAmount'] = $pest['amount'] * 0.12;
+            $pest['ewtAmount'] = ($pest['amount'] * -1) * 0.02;
+            $pest['netDueAmount'] = $pest['amount'] + $pest['vatAmount'] + $pest['ewtAmount'];
             return $pest;
         }
-        if($provision == 5){
-            $stp = $data['area'] * $data['stpMaintenance'];
+        if($provisions == 5){
+            $stp = [];
+            $stp['amount'] = $data['area'] * $data['stpMaintenance'];
+            $stp['vatAmount'] = $stp['amount'] * 0.12;
+            $stp['ewtAmount'] = ($stp['amount'] * -1) * 0.02;
+            $stp['netDueAmount'] = $stp['amount'] + $stp['vatAmount'] + $stp['ewtAmount'];
             return $stp;
         }
-        if($provision == 6){
-            $donation = $data['area'] * $data['donation'];
+        if($provisions == 6){
+            $donation = [];
+            $donation['amount'] = $data['area'] * $data['donation'];
+            $donation['vatAmount'] = $donation['amount'] * 0.12;
+            $donation['ewtAmount'] = ($donation['amount'] * -1) * 0.02;
+            $donation['netDueAmount'] = $donation['amount'] + $donation['vatAmount'] + $donation['ewtAmount'];
             return $donation;
         }
     }

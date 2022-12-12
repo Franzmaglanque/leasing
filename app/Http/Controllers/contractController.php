@@ -75,8 +75,10 @@ class contractController extends Controller
         $counter = 0;
         $rent = $data['monthlyRent'];
         $provision_count = count($data['provisions']) -1;
-
+        // var_dump( $data['provisions']);
+        // exit();
         for($p = 0; $p <= $provision_count; $p++){
+            echo $p;
             for ($i = 0; $i < $data['numYears']; $i++) {
                 if($i == 0){
                     $new_year = date("Y-m-d", strtotime("$year +1 year", time()));
@@ -129,10 +131,19 @@ class contractController extends Controller
                         // Save Contract Months to DB
                 $pvcomp = $this->pvcomp->save_pvcomp_contract($contract_header,$output,$i);
 
-                $provision = $this->Provision->save_lease_provision_sched($contract_header,$output,$i,$data['provisions'][$p],$data);
+                        // Save Contract Provisions to DB
+        
+               
+                // $provision = $this->Provision->save_lease_provision_sched($contract_header,$output,$i,$data,$data['provisions'][$p]);
+                if(!is_null($data['provisions'])){
+                    $provision = $this->Provision->save_lease_provision_sched($contract_header,$output,$i,$data,$data['provisions'][$p]);
+                }
+
             }
+          
+            // return $provision;
         }
-        return json_encode($output);
+        // return json_encode($output);
     // $days_result = $days_to - $days_from;
     // $day1 = $days_result/86400;//days 
     // $decimal = $day1/365;
