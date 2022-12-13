@@ -31,8 +31,10 @@ class Lease_Detail extends Model
                     ->where('leap_year',$data)
                     ->get();
         return $leap_year;
-        
+    }
 
-
+    public function getContractDetails(){
+        $contract_details = DB::table('tbl_lease_detail')->get();
+        return $contract_details;
     }
 }

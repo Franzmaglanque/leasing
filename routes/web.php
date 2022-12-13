@@ -13,50 +13,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/',function(){
-// return 'test';
-// });
 
+// Login
 Route::get('/','loginController@index');
 Route::post('/login','loginController@loginProcess');
+
+// Dashboard 
 Route::get('/dashboard','dashboardController@index');
+
+// Contract 
 Route::get('/contract','contractController@index');
 
-// Lessor index
+// Lessor 
 Route::get('/lessor','lessorController@index');
 
-// Lease index
+// Lease 
 Route::get('/lease','leaseController@index');
 
-// Provision Index
+// Provision 
 Route::get('/provision','provisionController@index');
+
+// generate Excel
+Route::get('/generateContractExcel','contractController@generateContractExcel');
+
+
+
 
 
 
 Route::get('/cheque','lessorController@getCheque');
-
-
-
 Route::get('/test','App\Http\Controllers\loginController@callTest');
 
-Route::get('/test',function(){
-
-    $start    = new DateTime('2022-03-01');
-    $end      = new DateTime('2023-02-25');
-    $interval = DateInterval::createFromDateString('1 month');
-    $period   = new DatePeriod($start, $interval, $end);
-    
-    foreach ($period as $dt) {
-        // var_dump($dt);
 
 
-        echo $dt->format("Y-m-d") . ' - ' . $dt->format("Y-m-t") . "<br>\n";
-
-        // echo $dt->getStartDate()->format("Y-m-d") . "<br>\n";
-        // echo $dt->getEndDate()->format("Y-m-d") . "<br>\n";
-
-    }
-
-
-
-});
+?>

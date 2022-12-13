@@ -59,9 +59,38 @@ class Lease_Header extends Model
             'userAdded' => session('employee_number'),       
             'leaseStatus' =>'H', 
             'escalationPercent' => $data['escalationPercent'],
+            'totalYear' => $data['numYears'],
         ]);
+        return $header_contract;       
+    }
 
-        return $header_contract;
-                
+    public function getExcelHeaderContract(){
+            $contract = DB::select("SELECT
+            a.headerID,
+            a.lessorCode,
+            a.area,
+            a.storeCode,
+            a.vendorCode,
+            a.leaseTypeCode,
+            a.Address1,
+            a.monthlyRent,
+            a.contractDateFrom,
+            a.contractDateTo,
+            a.escalationPercent,
+            a.totalYear,
+            a.securityDepositDuration,
+            a.securityDepositAmount,
+            a.advanceRentDuration,
+            a.advanceRentAmount,
+            b.lessorName,
+            c.leaseType
+        FROM
+            tbl_lease_header a
+            INNER JOIN tbl_lessor b ON a.lessorCode = b.lessorCode 
+            INNER JOIN tbl_lease_type c ON a.leaseTypeCode = c.leaseTypeCode
+            where a.headerID = 1
+        ")[0];
+
+        return $contract;
     }
 }

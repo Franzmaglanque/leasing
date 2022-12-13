@@ -3382,6 +3382,12 @@ var render = function render() {
   return _c("div", {
     staticClass: "container"
   }, [_c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.contractTable,
+      expression: "contractTable"
+    }],
     staticClass: "btn btn-success",
     on: {
       click: function click($event) {

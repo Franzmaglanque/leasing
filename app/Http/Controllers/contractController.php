@@ -9,11 +9,19 @@ use App\Lease_Detail;
 use App\Pvcomp;
 use App\Provision;
 
-// use App\Facade\DB;
+
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ContractResource;
 use App\Http\Resources\SubjectLeaseResource;
 use Illuminate\Support\Facades\Validator;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+use DateTime;
+use DatePeriod;
+use DateInterval;
+
 
 
 
@@ -101,7 +109,6 @@ class contractController extends Controller
                         'yearlyRent' => $yearlyRent,
                         'escalationPercent' => $data['escalationPercent'],
                         'monthlyRent' => floatval($data['monthlyRent']),
-            
                     ];
                 
                 }else{
@@ -271,5 +278,157 @@ class contractController extends Controller
 
         return $contracts;
    }
+
+   public function generateContractExcel(){
+    
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Contract Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $header2 = array(
+                'font' => [
+                    'bold' => true,
+                    'size' => 13
+                ],
+                'alignment' => [
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                ], 
+            );
+        $styleArray = array(
+            'font'  => array(
+                    'bold'  => true,
+                    // 'color' => array('rgb' => 'FF0000'),
+                    'size'  => 12,
+                    'name'  => 'Times New Roman'
+                ));
+                
+        $styleArray2 = array(
+            'font'  => array(
+                    'size'  => 12,
+                    'name'  => 'Times New Roman'
+                )); 
+
+        $borderArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    // 'color' => ['argb' => 'FFFF0000'],
+
+                ],
+            ],
+        ];
+
+            // GET CONTRACT HEADER DETAILS
+        $contract = $this->Lease_Header->getExcelHeaderContract();
+        $contractDetails = $this->Lease_Detail->getContractDetails();
+        // var_dump($contractDetails);
+        // dd($contractDetails);
+
+        // $contractyear = $this->Lease_Detail->
+
+            // TRANSFORM DATE FROM DATABASE 
+        $newDateFrom = new DateTime($contract->contractDateFrom);
+        $newDateFrom = $newDateFrom->format('F j, Y');
+        $newDateTo = new DateTime($contract->contractDateTo);
+        $newDateTo = $newDateTo->format('F j, Y');
+
+            // COMPUTE AREA PER SQM
+        $perSquareMeter = $contract->monthlyRent / $contract->area;
+
+            // 
+        $sheet->getStyle('A1:A7')->applyFromArray($styleArray);
+        $sheet->getStyle('D1:D7')->applyFromArray($styleArray);
+        $sheet->getStyle('E1:E7')->applyFromArray($styleArray2);
+        $sheet->getStyle('F1:F7')->applyFromArray($styleArray2);
+        $sheet->getStyle('G5')->applyFromArray($styleArray2);
+        $sheet->mergeCells('A11:B11');
+        $sheet->mergeCells('C11:D11');
+        $sheet->getStyle('A11:H11')->applyFromArray($borderArray);
+        $sheet->getStyle('A11:H11')->applyFromArray($styleArray);
+
+
+
+        $sheet->getColumnDimension('A')->setWidth(12);
+        $sheet->getColumnDimension('B')->setWidth(12);
+        $sheet->getColumnDimension('C')->setWidth(12);
+        $sheet->getColumnDimension('D')->setWidth(12);
+        $sheet->getColumnDimension('E')->setWidth(12);
+        $sheet->getColumnDimension('F')->setWidth(12);
+        $sheet->getColumnDimension('G')->setWidth(12);
+        $sheet->getColumnDimension('H')->setWidth(12);
+        $sheet->getRowDimension('11')->setRowHeight(50);
+
+
+
+        
+            // HARDCODE CONTRACT HEADER 
+        $sheet->setCellValue('A1', 'LESSOR');
+        $sheet->setCellValue('A2', 'SUBJECT LEASE');
+        $sheet->setCellValue('A3', 'AREA (sqm)');
+        $sheet->setCellValue('A4', 'MONTHLY RENT (VAT exclusive)');
+        $sheet->setCellValue('A5', 'CONTRACT PERIOD');
+        $sheet->setCellValue('A6', 'SECURITY DEPOSIT');
+        $sheet->setCellValue('A7', 'ADVANCE RENT ');
+        $sheet->setCellValue('A11', 'PERIOD');
+        $sheet->setCellValue('C11', 'YEAR');
+        $sheet->setCellValue('E11', 'RENT');
+        $sheet->setCellValue('F11', 'VAT');
+        $sheet->setCellValue('G11', '5% EWT');
+        $sheet->setCellValue('H11', 'NET DUE');
+
+
+
+                // CONTRACT HEADER DETAILS
+        $sheet->setCellValue('D1', $contract->lessorName);
+        $sheet->setCellValue('D2', $contract->leaseType);
+        $sheet->setCellValue('D3', $contract->area);
+        $sheet->setCellValue('D4', $contract->monthlyRent);
+        $sheet->setCellValue('E4', $perSquareMeter);
+        $sheet->setCellValue('E4', '/sqm');
+        $sheet->setCellValue('D5', $contract->totalYear);
+        $sheet->setCellValue('E5', 'Years');
+        $sheet->setCellValue('F5', $newDateFrom);
+        $sheet->setCellValue('G5', $newDateTo);
+        $sheet->setCellValue('D6', $contract->securityDepositDuration);
+        $sheet->setCellValue('E6', 'Months');
+        $sheet->setCellValue('F6', $contract->securityDepositAmount);
+        $sheet->setCellValue('D7', $contract->advanceRentDuration);
+        $sheet->setCellValue('E7', 'Months');
+        $sheet->setCellValue('F7', $contract->advanceRentAmount);
+
+
+                // CONTRACT YEAR DETAILS
+        $cnt = 12;
+        foreach($contractDetails as $row){
+            $newDateFrom = new DateTime($row->periodFrom);
+            $newDateFrom = $newDateFrom->format('m-d-Y');
+            $sheet->setCellValue('A'.$cnt, $newDateFrom);
+            $newDateTo = new DateTime($row->periodTo);
+            $newDateTo = $newDateTo->format('m-d-Y');
+            $sheet->setCellValue('B'.$cnt, $newDateTo);
+            $sheet->setCellValue('C'.$cnt, $row->yearID);
+            $sheet->setCellValue('D'.$cnt, $row->escalationPercent . '%');
+            $sheet->setCellValue('E'.$cnt, number_format($row->rentAmount,2));
+            $sheet->setCellValue('F'.$cnt, number_format($row->vatAmount,2));
+            $sheet->setCellValue('G'.$cnt, number_format($row->ewtAmount,2));
+            $sheet->setCellValue('H'.$cnt, number_format($row->netDueAmount,2));
+
+
+
+
+
+
+            // echo $row->periodFrom;
+            // echo "<br>";
+            $cnt++;
+        }
+        
+
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+    }
 
 }

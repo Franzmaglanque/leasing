@@ -20,7 +20,7 @@
         </div>
         </div> -->
 
-        <button  @click="showCreateContractForm()" class="btn btn-success">Create Contract<i class="icon-arrow-right14 position-right"></i></button>
+        <button v-show="contractTable" @click="showCreateContractForm()" class="btn btn-success">Create Contract<i class="icon-arrow-right14 position-right"></i></button>
 
 
 <br><br>
@@ -507,7 +507,7 @@ import Select2 from 'v-select2-component';
         },
        methods:{
         exportContract(){
-            
+
         },
         showProvisionInput(){
             if(this.contract.provisions.includes('1')){
