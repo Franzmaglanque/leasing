@@ -766,14 +766,16 @@ import Select2 from 'v-select2-component';
             var dateFrom = new Date(this.contract.rentFreePeriodFrom);
 
             if(this.contract.rentFreeDay){
-                dateFrom.setDate(dateFrom.getDate() + parseInt(this.contract.rentFreeDay));
+                dateFrom.setDate((dateFrom.getDate() + parseInt(this.contract.rentFreeDay))-1);
             }
             
             if(this.contract.rentFreeMonth){
+                dateFrom.setDate(dateFrom.getDate() -1);
                 dateFrom.setMonth(dateFrom.getMonth() + parseInt(this.contract.rentFreeMonth));
             }
 
             if(this.contract.rentFreeYear){
+                dateFrom.setDate(dateFrom.getDate() -1);
                 dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.rentFreeYear));
             }
 

@@ -2592,12 +2592,14 @@ __webpack_require__.r(__webpack_exports__);
     computeRentFreeTo: function computeRentFreeTo() {
       var dateFrom = new Date(this.contract.rentFreePeriodFrom);
       if (this.contract.rentFreeDay) {
-        dateFrom.setDate(dateFrom.getDate() + parseInt(this.contract.rentFreeDay));
+        dateFrom.setDate(dateFrom.getDate() + parseInt(this.contract.rentFreeDay) - 1);
       }
       if (this.contract.rentFreeMonth) {
+        dateFrom.setDate(dateFrom.getDate() - 1);
         dateFrom.setMonth(dateFrom.getMonth() + parseInt(this.contract.rentFreeMonth));
       }
       if (this.contract.rentFreeYear) {
+        dateFrom.setDate(dateFrom.getDate() - 1);
         dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.rentFreeYear));
       }
       var year = dateFrom.toLocaleString("default", {
