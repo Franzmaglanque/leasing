@@ -36,7 +36,13 @@ class Lease_Header extends Model
 
     public function save_header_contract($data){
 
-        // $header_contract = DB::table('tbl_lease_header')->insert([
+        if($data['rentFreeIncluded'] == false){
+            $withRentFree = 'YES';
+        }else{
+            $withRentFree = 'NO';
+        }
+
+     
         $header_contract = DB::table('tbl_lease_header')->insertGetId([
             'lessorCode' => $data['lessor'],
             'storeCode' => $data['store'],
@@ -60,11 +66,15 @@ class Lease_Header extends Model
             'leaseStatus' =>'H', 
             'escalationPercent' => $data['escalationPercent'],
             'totalYear' => $data['numYears'],
+            'rentFreeYear' => $data['rentFreeYear'],
+            'rentFreeMonth' => $data['rentFreeMonth'],
+            'rentFreeDay' => $data['rentFreeDay'],
+            'withRentFree' => $withRentFree,
         ]);
         return $header_contract;       
     }
 
-    public function getExcelHeaderContract(){
+    public function getExcelHeaderContract($data){
             $contract = DB::select("SELECT
             a.headerID,
             a.lessorCode,
@@ -81,6 +91,7 @@ class Lease_Header extends Model
             a.securityDepositDuration,
             a.securityDepositAmount,
             a.advanceRentDuration,
+            a.withRentFree,
             a.advanceRentAmount,
             b.lessorName,
             c.leaseType
@@ -88,7 +99,7 @@ class Lease_Header extends Model
             tbl_lease_header a
             INNER JOIN tbl_lessor b ON a.lessorCode = b.lessorCode 
             INNER JOIN tbl_lease_type c ON a.leaseTypeCode = c.leaseTypeCode
-            where a.headerID = 1
+            where a.headerID = $data
         ")[0];
 
         return $contract;

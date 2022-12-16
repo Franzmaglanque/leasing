@@ -2374,7 +2374,55 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    exportContract: function exportContract() {},
+    exportContract: function exportContract(id) {
+      var recordID = {
+        rowID: id
+      };
+      console.log(recordID);
+      axios.get('/generateContractExcel?id=' + id, {
+        headers: {
+          'Content-Disposition': "attachment; filename=Contract_Report.xlsx",
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        },
+        responseType: 'arraybuffer'
+      })
+      //    .then(res =>{
+      //     // this.provisions = res.data
+
+      //     // console.log(JSON.stringify(this.lessors));
+
+      //    })
+      .then(function (response) {
+        var url = window.URL.createObjectURL(new Blob([response.data]));
+        var link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Contract_Report.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })["catch"](function (err) {
+        console.log(err.response);
+      });
+      console.log(recordID);
+      // axios.post('/testing1234',recordID,
+      //     {
+      //         headers:
+      //         {
+      //             'Content-Disposition': "attachment; filename=template.xlsx",
+      //             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      //         },
+      //         responseType: 'arraybuffer',
+      //     }
+      // )
+      // .then((response) => {
+      //     const url = window.URL.createObjectURL(new Blob([response.data]));
+      //     const link = document.createElement('a');
+      //     link.href = url;
+      //     link.setAttribute('download', 'template.xlsx');
+      //     document.body.appendChild(link);
+      //     link.click();
+      // })
+      // .catch((error) => console.log(error));
+    },
     showProvisionInput: function showProvisionInput() {
       if (this.contract.provisions.includes('1')) {
         this.showProvision.cusa = true;
@@ -2587,20 +2635,24 @@ __webpack_require__.r(__webpack_exports__);
       if (this.contract.rentFreeIncluded) {
         this.contract.contractPeriodFrom = this.contract.rentFreePeriodFrom;
         this.contract.rentFreePeriodTo = null;
+        // this.contract.rentFreeIncluded = true;
       }
+      // console.log(this.contract.rentFreeIncluded);
     },
     computeRentFreeTo: function computeRentFreeTo() {
       var dateFrom = new Date(this.contract.rentFreePeriodFrom);
+      console.log('initial' + dateFrom);
       if (this.contract.rentFreeDay) {
         dateFrom.setDate(dateFrom.getDate() + parseInt(this.contract.rentFreeDay) - 1);
       }
       if (this.contract.rentFreeMonth) {
-        dateFrom.setDate(dateFrom.getDate() - 1);
         dateFrom.setMonth(dateFrom.getMonth() + parseInt(this.contract.rentFreeMonth));
+        dateFrom.setDate(dateFrom.getDate() - 1);
+        console.log('updated' + dateFrom);
       }
       if (this.contract.rentFreeYear) {
-        dateFrom.setDate(dateFrom.getDate() - 1);
         dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.rentFreeYear));
+        dateFrom.setDate(dateFrom.getDate() - 1);
       }
       var year = dateFrom.toLocaleString("default", {
         year: "numeric"
@@ -2608,9 +2660,11 @@ __webpack_require__.r(__webpack_exports__);
       var month = dateFrom.toLocaleString("default", {
         month: "2-digit"
       });
+      console.log('final month ' + month);
       var day = dateFrom.toLocaleString("default", {
         day: "2-digit"
       });
+      console.log('final day ' + day);
       var newRentFreePeriodFrom = year + '-' + month + '-' + day;
       // console.log(dateFrom);
 
@@ -2635,7 +2689,11 @@ __webpack_require__.r(__webpack_exports__);
     },
     computeContractEnd: function computeContractEnd() {
       var dateFrom = new Date(this.contract.contractPeriodFrom);
+      // console.log(dateFrom.setDate(dateFrom.getDate() -1));
+      // var day = dateFrom.toLocaleString("default", { day: "2-digit" });
+      // console.log(day);
       if (this.contract.numYears) {
+        dateFrom.setDate(dateFrom.getDate() - 1);
         dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.numYears));
         // dateFrom.setDate(dateFrom.getDate() + 1);
       }
@@ -3419,10 +3477,12 @@ var render = function render() {
       staticClass: "btn btn-primary",
       on: {
         click: function click($event) {
-          return _vm.exportContract();
+          return _vm.exportContract(contractList.headerID);
         }
       }
-    }, [_vm._v("View Contract")])])]);
+    }, [_vm._v("View Contract")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-primary"
+    }, [_vm._v("Add Escalation")])])]);
   }), 0)]), _vm._v(" "), _vm.createContractForm ? _c("form", {
     staticClass: "form-horizontal",
     attrs: {
@@ -3654,6 +3714,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     attrs: {
+      disabled: _vm.contract.rentFreeIncluded,
       type: "text"
     },
     domProps: {
@@ -3678,6 +3739,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     attrs: {
+      disabled: _vm.contract.rentFreeIncluded,
       type: "text"
     },
     domProps: {
@@ -3702,6 +3764,7 @@ var render = function render() {
     }],
     staticClass: "form-control",
     attrs: {
+      disabled: _vm.contract.rentFreeIncluded,
       type: "text"
     },
     domProps: {
@@ -4205,12 +4268,6 @@ var render = function render() {
   })])]) : _vm._e()])])]), _vm._v(" "), _c("div", {
     staticClass: "text-right"
   }, [_c("button", {
-    on: {
-      click: function click($event) {
-        return _vm.checkprovision();
-      }
-    }
-  }, [_vm._v("click")]), _vm._v(" "), _c("button", {
     staticClass: "btn bg-danger-700 btn-labeled",
     on: {
       click: function click($event) {

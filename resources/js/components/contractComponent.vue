@@ -45,7 +45,6 @@
                 <!-- :id="index"  <tr v-for="(contractDetail,index) of contractDetails"> -->
                 <tr v-for="contractList of contractLists">
                     <td style="display:none;">{{contractList.headerID}}</td>
-
                     <td>{{contractList.lessorName}}</td>
                     <td>{{contractList.vendorCode}}</td>
                     <td>{{contractList.storeCode}}</td>
@@ -54,8 +53,11 @@
                     <td>{{contractList.contractDateFrom}}</td>
                     <td>{{contractList.contractDateTo}}</td>   
                     <td>{{contractList.escalationPercent}}%</td>
-                    <td><button @click="exportContract()" class="btn btn-primary">View Contract</button></td>
+                    <td>
+                        <button @click="exportContract(contractList.headerID)"  class="btn btn-primary">View Contract</button>
+                        <button  class="btn btn-primary">Add Escalation</button>
 
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -118,7 +120,6 @@
                                     <label class="col-lg-3 control-label">Address:</label>
                                     <div class="col-lg-9">
                                         <input id="address" v-model.lazy="contract.address" type="text" class="form-control" >
-                                        <!-- <input type="text" v-model="errors.address"> -->
                                     </div>
                                 </div>
 
@@ -130,24 +131,15 @@
                                          :options="provinces"
                                          @change="fetchMunicipalities()"
                                        />
-                                       
-                                        <!-- <input v-model="contract.payee" type="text" class="form-control" > -->
-                                        <!-- <select  v-model="contract.province" data-placeholder="Select Province" class="form-control select" @change="setProvCode($event)">
-                                            <option   v-for="province in provinces" :value="province.id">{{province.text}}</option>
-                                        </select> -->
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="col-lg-3 control-label">Municipality:</label>
                                     <div class="col-lg-9">
-                                        <!-- <input v-model="contract.payee" type="text" class="form-control" > -->
                                         <Select2
                                          v-model="contract.municipality" 
                                          :options="municipalities"/>
-                                        <!-- <select  v-model="contract.municipality" data-placeholder="Select Payee" class="form-control select">
-                                            <option v-for="municipality in municipalities" value="municipality.citymunDesc">{{municipality.citymunDesc}}</option>
-                                        </select> -->
                                     </div>
                                 </div>
 
@@ -157,9 +149,6 @@
                                         <Select2
                                          v-model="contract.store" 
                                          :options="stores"/>
-                                        <!-- <select  v-model="contract.store" data-placeholder="Select Store" class="form-control select">
-                                            <option v-for="store in stores" value="store.STRNUM">@{{store.STRNUM}} - @{{store.STRNAM}}</option>
-                                        </select> -->
                                     </div>
                                 </div>
 
@@ -169,18 +158,13 @@
                                         <Select2
                                          v-model="contract.subjectLease" 
                                          :options="subjectLease"/>
-                                        <!-- <select   v-model="contract.subjectLease" @change="onChange($event)"  data-placeholder="Select Lease type" class="select form-control">
-                                            <option v-for="subject in subjectLease" :value="subject.id">@{{subject.text}}</option>
-                                        </select> -->
                                     </div>
                                 </div>
                                 <div class="form-group">
                                 <label class="col-lg-3 control-label">Rent Free included in contract?</label>
                                     <div class="col-lg-9">
-                                 
-                                        <!-- <input type="date" id="dateRangePicker" v-model="contract.contractPeriodFrom" class="form-control"> -->
+
                                         <select @change="rentFreeIncluded()" v-model="contract.rentFreeIncluded" data-placeholder="Select Lease type" class="select form-control">
-                                            <!-- <option v-for="subject in subjectLease" :value="subject.id">@{{subject.text}}</option> -->
                                             <option  :value="true">Included</option>
                                             <option  :value="false">Not Included</option>
                                         </select>
@@ -192,15 +176,15 @@
                                     <label class="col-lg-2 control-label">Rent Free Period:</label>
                                     <div class="col-lg-2 control-label">
                                         <label >Number Years</label>
-                                        <input v-model.lazy="contract.rentFreeYear" type="text" class="form-control" >
+                                        <input :disabled="contract.rentFreeIncluded" v-model.lazy="contract.rentFreeYear" type="text" class="form-control" >
                                     </div>
                                     <div class="col-lg-2 control-label">
                                         <label >Number Months</label>
-                                        <input v-model.lazy="contract.rentFreeMonth" type="text" class="form-control" >
+                                        <input :disabled="contract.rentFreeIncluded" v-model.lazy="contract.rentFreeMonth" type="text" class="form-control" >
                                     </div>
                                     <div class="col-lg-2 control-label">
                                         <label >Number days</label>
-                                        <input  v-model.lazy="contract.rentFreeDay" type="text" class="form-control" >
+                                        <input  :disabled="contract.rentFreeIncluded" v-model.lazy="contract.rentFreeDay" type="text" class="form-control" >
                                     </div>
 
                                     <div class="col-lg-2 control-label">   
@@ -223,7 +207,6 @@
                                     </div>
                                     <div class="col-lg-3 control-label">
                                     <label >From:</label>
-                                        <!-- <input type="date" @change="computeContractEnd()" id="dateRangePicker" v-model="contract.contractPeriodFrom" class="form-control"> -->
                                         <input disabled type="date" id="dateRangePicker" v-model="contract.contractPeriodFrom" class="form-control">
                                     
                                     </div>
@@ -276,9 +259,6 @@
                                     </div>
                                     <label class="col-lg-2 control-label">Provisions</label>
                                     <div class="col-lg-4">
-                                        <!-- <select  data-placeholder="Select Lease type" class="select form-control">
-                                            <option v-for="provision in provisions" :value="provision.id    ">{{provision.provisionDescription}}</option>    
-                                        </select> -->
                                         <Select2
                                          v-model="contract.provisions" 
                                          @change="showProvisionInput()"
@@ -287,19 +267,6 @@
                                          />
                                     </div>
                                 </div>
-
-                                <!-- <div class="form-group">
-                                    <label class="col-lg-2 control-label">Provisions</label>
-                                    <div class="col-lg-4">
-
-                                        <Select2
-                                         v-model="contract.provisions" 
-                                         @change="testing123()"
-                                         :options="provisions"
-                                         :settings="{ multiple: true}"
-                                         />
-                                    </div>
-                                </div> -->
 
                      
 
@@ -348,59 +315,14 @@
                         </div>          
                     </div>
                     <div class="text-right">
-                        <button @click="checkprovision()">click</button>
+                        <!-- <button @click="checkprovision()">click</button> -->
                         <button @click="hideCreateContractForm()" class="btn bg-danger-700 btn-labeled"><b><i class="icon-cross"></i></b>Cancel</button>
                         <!-- <button  @click="populateContractTable()" class="btn bg-primary-700 btn-labeled"><b><i class="icon-database-insert"></i></b>Save Contract</button> -->
-                        <button  @click="saveContract()" class="btn btn-primary">Generate<i class="icon-arrow-right14 position-right"></i></button>
-                        
-                        <!-- <button  @click="checkContract()" class="btn btn-primary">Create Contract <i class="icon-arrow-right14 position-right"></i></button> -->
-                        
+                        <button  @click="saveContract()" class="btn btn-primary">Generate<i class="icon-arrow-right14 position-right"></i></button>              
                     </div>
                 </div>
             </div>
         </form>
-
-
-        <!-- <div class="panel-body">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="table-responsive">
-                        
-                        <table  id="contractTbl" name="contractTbl" class="table table-hover table-xxs">
-                            <thead>
-                                <tr>
-                                    <th>Year</th>
-                                    <th>Year Start</th>
-                                    <th>Year End</th>
-                                    <th>Escalation Percent</th>
-                                    <th>Rent</th>
-                                    <th>VAT To</th>
-                                    <th>EWT</th>
-                                    <th>NET</th>
-                                    <th>Yearly Rent</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                             
-                                <tr v-for="(contractDetail,index) of contractDetails">
-                                    <td>{{contractDetail.yearNum}}</td>
-                                    <td>{{contractDetail.yearFrom}}</td>
-                                    <td>{{contractDetail.yearTo}}</td>
-                                    <td>{{contractDetail.escalationPercent}}</td>
-                                    <td>{{contractDetail.rentAmount}}</td>
-                                    <td>{{contractDetail.vatAmount}}</td>
-                                    <td>{{contractDetail.ewtAmount}}</td>
-                                    <td>{{contractDetail.netDueAmount}}</td>
-                                    <td>{{contractDetail.yearlyRent}}</td>     
-                                </tr>
-                            </tbody>
-   
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
     </div>
 </template>
@@ -506,8 +428,59 @@ import Select2 from 'v-select2-component';
 
         },
        methods:{
-        exportContract(){
+        exportContract(id){
+            var recordID = {
+                rowID :id,
+            }        
+            console.log(recordID);  
+            axios.get('/generateContractExcel?id='+id,
+                {
+                    headers:
+                    {
+                        'Content-Disposition': "attachment; filename=Contract_Report.xlsx",
+                        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    },
+                    responseType: 'arraybuffer',
+                }
+            )
+            //    .then(res =>{
+            //     // this.provisions = res.data
+                
+            //     // console.log(JSON.stringify(this.lessors));
 
+            //    })
+ .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Contract_Report.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            })
+            
+               .catch(err =>{
+                  console.log(err.response)
+               }); 
+                console.log(recordID);
+            // axios.post('/testing1234',recordID,
+            //     {
+            //         headers:
+            //         {
+            //             'Content-Disposition': "attachment; filename=template.xlsx",
+            //             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            //         },
+            //         responseType: 'arraybuffer',
+            //     }
+            // )
+            // .then((response) => {
+            //     const url = window.URL.createObjectURL(new Blob([response.data]));
+            //     const link = document.createElement('a');
+            //     link.href = url;
+            //     link.setAttribute('download', 'template.xlsx');
+            //     document.body.appendChild(link);
+            //     link.click();
+            // })
+            // .catch((error) => console.log(error));
         },
         showProvisionInput(){
             if(this.contract.provisions.includes('1')){
@@ -650,13 +623,7 @@ import Select2 from 'v-select2-component';
             $("#lessor").addClass("border-danger");
             console.log(  $("#lessor").val());
 
-           }
-
-
-
-
-
-             
+           }       
         },
         populateContractTable_old2(){
             var contractData;
@@ -759,29 +726,37 @@ import Select2 from 'v-select2-component';
             if(this.contract.rentFreeIncluded){
                 this.contract.contractPeriodFrom = this.contract.rentFreePeriodFrom;
                 this.contract.rentFreePeriodTo = null;
+                // this.contract.rentFreeIncluded = true;
             }
+            // console.log(this.contract.rentFreeIncluded);
         },
 
         computeRentFreeTo(){
             var dateFrom = new Date(this.contract.rentFreePeriodFrom);
+            console.log('initial' + dateFrom);
 
             if(this.contract.rentFreeDay){
                 dateFrom.setDate((dateFrom.getDate() + parseInt(this.contract.rentFreeDay))-1);
             }
             
             if(this.contract.rentFreeMonth){
-                dateFrom.setDate(dateFrom.getDate() -1);
+             
                 dateFrom.setMonth(dateFrom.getMonth() + parseInt(this.contract.rentFreeMonth));
+                dateFrom.setDate(dateFrom.getDate() - 1);
+                console.log('updated' + dateFrom);
             }
 
             if(this.contract.rentFreeYear){
-                dateFrom.setDate(dateFrom.getDate() -1);
+                
                 dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.rentFreeYear));
+                dateFrom.setDate(dateFrom.getDate() -1);
             }
 
             var year = dateFrom.toLocaleString("default", { year: "numeric" });
             var month = dateFrom.toLocaleString("default", { month: "2-digit" });
+            console.log('final month ' + month);
             var day = dateFrom.toLocaleString("default", { day: "2-digit" });
+            console.log('final day ' + day);
             var newRentFreePeriodFrom = year + '-' + month + '-' + day;
             // console.log(dateFrom);
   
@@ -802,7 +777,11 @@ import Select2 from 'v-select2-component';
 
         computeContractEnd(){
             var dateFrom = new Date(this.contract.contractPeriodFrom);
+            // console.log(dateFrom.setDate(dateFrom.getDate() -1));
+            // var day = dateFrom.toLocaleString("default", { day: "2-digit" });
+            // console.log(day);
             if(this.contract.numYears){
+                dateFrom.setDate(dateFrom.getDate() -1);
                 dateFrom.setFullYear(dateFrom.getFullYear() + parseInt(this.contract.numYears));
                 // dateFrom.setDate(dateFrom.getDate() + 1);
             }
@@ -812,7 +791,7 @@ import Select2 from 'v-select2-component';
             var day = dateFrom.toLocaleString("default", { day: "2-digit" });
             var newContractPeriodTo = year + '-' + month + '-' + day;
 
-            this.contract.contractPeriodTo = newContractPeriodTo
+            this.contract.contractPeriodTo = newContractPeriodTo;
             // console.log(newContractPeriodTrom);
         },
 

@@ -25,6 +25,27 @@ class Lease_Detail extends Model
         return $header_contract;         
     }
 
+    public function save_rent_free_contract($data,$contract_header,$i){
+        $contract_rentfree = DB::table('tbl_lease_detail')->insert([
+            'headerID' => $contract_header,
+            'periodFrom' => $data['rentFreePeriodFrom'],
+            'periodTo' => $data['rentFreePeriodTo'],
+            'durationCount' => $i,
+            // 'escalationPercent' => '',
+            // 'rentAmount' => '',
+            // 'vatAmount' => '',
+            // 'ewtAmount' => '',
+            // 'netDueAmount' => '',
+            'yearID' => $i,
+            'isRentFree' => 1,
+            'rentFreeYear' => $data['rentFreeYear'],
+            'rentFreeMonth' => $data['rentFreeMonth'],
+            'rentFreeDay' => $data['rentFreeDay'],
+
+        ]);
+        return $contract_rentfree;   
+    }
+
 
     public function checkLeapYear($data){
         $leap_year = DB::table('tbl_leap_year')
@@ -33,8 +54,18 @@ class Lease_Detail extends Model
         return $leap_year;
     }
 
-    public function getContractDetails(){
-        $contract_details = DB::table('tbl_lease_detail')->get();
+    public function getContractDetails($data){
+        $contract_details = DB::table('tbl_lease_detail')
+                    ->where('headerID',$data)
+                    ->get();
         return $contract_details;
     }
+
+    // public function getRentFreeDetails(){
+    //     $rentFreeDetails = DB::table('tbl_lease_detail')
+    //                         ->where('headerID',1)
+    //                         ->where('isRentFree',1)            
+    //                         ->get();
+    //     return $rentFreeDetails;
+    // }
 }

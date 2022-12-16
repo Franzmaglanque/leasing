@@ -35,6 +35,9 @@ Route::get('/provision','provisionController@index');
 
 // generate Excel
 Route::get('/generateContractExcel','contractController@generateContractExcel');
+Route::get('/generateContractExcel2','contractController@generateContractExcel');
+Route::post('/testing1234','contractController@testing1234');
+
 
 
 

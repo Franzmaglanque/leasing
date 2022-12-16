@@ -85,13 +85,20 @@ class contractController extends Controller
         $provision_count = count($data['provisions']) -1;
         // var_dump( $data['provisions']);
         // exit();
+        $cnt = 1;
         for($p = 0; $p <= $provision_count; $p++){
-            echo $p;
+        
+
             for ($i = 0; $i < $data['numYears']; $i++) {
-                if($i == 0){
+               if($i == 0){
+                        // save to database if with rent free
+                    if($data['rentFreeIncluded'] == false ){
+                        if($p == 0){
+                            $contractRentFree = $this->Lease_Detail->save_rent_free_contract($data,$contract_header,$i+1);
+                        }
+                    }
                     $new_year = date("Y-m-d", strtotime("$year +1 year", time()));
                     $new_year_updated = date("Y-m-d", strtotime("$new_year -1 day", time()));
-
                     $vat = $data['monthlyRent'] * 0.12;
                     $ewt = ($data['monthlyRent'] * -1) * 0.05 ;
                     $net = $data['monthlyRent'] + $ewt + $vat;
@@ -110,7 +117,6 @@ class contractController extends Controller
                         'escalationPercent' => $data['escalationPercent'],
                         'monthlyRent' => floatval($data['monthlyRent']),
                     ];
-                
                 }else{
                     $new_yearFrom = $new_year;
                     $vat = $data['monthlyRent'] * 0.12;
@@ -131,23 +137,24 @@ class contractController extends Controller
                         'yearlyRent' => $yearlyRent,
                         'escalationPercent' => $data['escalationPercent'],
                         'monthlyRent' => floatval($data['monthlyRent']),
+                       
                     ];
                 }
-                        // Save Contract Years to DB
-                $contract_detail = $this->Lease_Detail->save_detail_contract($output,$i);
-                        // Save Contract Months to DB
-                $pvcomp = $this->pvcomp->save_pvcomp_contract($contract_header,$output,$i);
-
-                        // Save Contract Provisions to DB
-        
-               
-                // $provision = $this->Provision->save_lease_provision_sched($contract_header,$output,$i,$data,$data['provisions'][$p]);
+                        // if statement para hindi mag doble yung 
+                if($cnt == 1){
+                    // Save Contract Years to DB
+                    $contract_detail = $this->Lease_Detail->save_detail_contract($output,$i);
+                    // Save Contract Months to DB
+                    $pvcomp = $this->pvcomp->save_pvcomp_contract($contract_header,$output,$i);
+                }
+                  
+                          // Save Contract Provisions to DB
                 if(!is_null($data['provisions'])){
                     $provision = $this->Provision->save_lease_provision_sched($contract_header,$output,$i,$data,$data['provisions'][$p]);
                 }
 
             }
-          
+          $cnt = 0;
             // return $provision;
         }
         // return json_encode($output);
@@ -159,55 +166,54 @@ class contractController extends Controller
    }
 
 
-   public function getContractArray(){
+//    public function getContractArray(){
 
-            $data = request()->all();
-        
-        $output = array();
-        $year =  date('Y-m-d', strtotime($data['contractPeriodFrom']));
-        $year_only =  date('Y', strtotime($data['contractPeriodFrom']));
-        $counter = 0;
-        $rent = $data['monthlyRent'];
-        for ($i = 0; $i < $data['numYears']; $i++) {
-        if($i == 0){
-            $new_year = date("Y-m-d", strtotime("$year +1 year", time()));
-            $vat = $data['monthlyRent'] * 0.12;
-            $ewt = ($data['monthlyRent'] * -1) * 0.05 ;
-            $net = $data['monthlyRent'] + $ewt + $vat;
-            $output['data'][] = [
+//         $data = request()->all();
+//         $output = array();
+//         $year =  date('Y-m-d', strtotime($data['contractPeriodFrom']));
+//         $year_only =  date('Y', strtotime($data['contractPeriodFrom']));
+//         $counter = 0;
+//         $rent = $data['monthlyRent'];
+//         for ($i = 0; $i < $data['numYears']; $i++) {
+//         if($i == 0){
+//             $new_year = date("Y-m-d", strtotime("$year +1 year", time()));
+//             $vat = $data['monthlyRent'] * 0.12;
+//             $ewt = ($data['monthlyRent'] * -1) * 0.05 ;
+//             $net = $data['monthlyRent'] + $ewt + $vat;
+//             $output['data'][] = [
                 
-                'yearFrom' => $year,
-                'yearTo' => $new_year,
-                'yearNum' => $i,
-                'escalationPercent' => 5,
-                'rentAmount' => $data['monthlyRent'],
-                'vatAmount' => $vat,
-                'ewtAmount' => $ewt,
-                'netDueAmount' => $net,
-            ];
-        }else{
-            $new_yearFrom = $new_year;
-            $vat = $data['monthlyRent'] * 0.12;
-            $ewt = ($data['monthlyRent'] * -1) * 0.05 ;
-            $net = $data['monthlyRent'] + $ewt + $vat;
-            $new_year = date("Y-m-d", strtotime("$new_yearFrom +1 year", time()));
-            $output['data'][] = [
-                'yearFrom' => $new_yearFrom,
-                'yearTo' => $new_year,
-                'yearNum' => $i,
-                'escalationPercent' => 5,
-                'rentAmount' => $data['monthlyRent'],
-                'vatAmount' => $vat,
-                'ewtAmount' => $ewt,
-                'netDueAmount' => $net,
-            ];
-            }
-            $contract_detail = $this->Lease_Detail->save_detail_contract($output);
+//                 'yearFrom' => $year,
+//                 'yearTo' => $new_year,
+//                 'yearNum' => $i,
+//                 'escalationPercent' => 5,
+//                 'rentAmount' => $data['monthlyRent'],
+//                 'vatAmount' => $vat,
+//                 'ewtAmount' => $ewt,
+//                 'netDueAmount' => $net,
+//             ];
+//         }else{
+//             $new_yearFrom = $new_year;
+//             $vat = $data['monthlyRent'] * 0.12;
+//             $ewt = ($data['monthlyRent'] * -1) * 0.05 ;
+//             $net = $data['monthlyRent'] + $ewt + $vat;
+//             $new_year = date("Y-m-d", strtotime("$new_yearFrom +1 year", time()));
+//             $output['data'][] = [
+//                 'yearFrom' => $new_yearFrom,
+//                 'yearTo' => $new_year,
+//                 'yearNum' => $i,
+//                 'escalationPercent' => 5,
+//                 'rentAmount' => $data['monthlyRent'],
+//                 'vatAmount' => $vat,
+//                 'ewtAmount' => $ewt,
+//                 'netDueAmount' => $net,
+//             ];
+//             }
+//             $contract_detail = $this->Lease_Detail->save_detail_contract($output);
         
-        }
-        return $output;
+//         }
+//         return $output;
 
-    }
+//     }
 
 
 
@@ -280,7 +286,9 @@ class contractController extends Controller
    }
 
    public function generateContractExcel(){
-    
+    $data = request()->all();
+    // dd($data);
+    // dd($data['rowID']);
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="Contract Report.xlsx"');
         header('Cache-Control: max-age=0');
@@ -310,6 +318,12 @@ class contractController extends Controller
                     'name'  => 'Times New Roman'
                 )); 
 
+        $styleArray3 = array(
+            'font'  => array(
+                    'size'  => 12,
+                    'name'  => 'Times New Roman',
+                    'color' => array('rgb' => '0000ff'),
+                )); 
         $borderArray = [
             'borders' => [
                 'allBorders' => [
@@ -319,14 +333,11 @@ class contractController extends Controller
                 ],
             ],
         ];
-
+       
             // GET CONTRACT HEADER DETAILS
-        $contract = $this->Lease_Header->getExcelHeaderContract();
-        $contractDetails = $this->Lease_Detail->getContractDetails();
-        // var_dump($contractDetails);
-        // dd($contractDetails);
-
-        // $contractyear = $this->Lease_Detail->
+        $contract = $this->Lease_Header->getExcelHeaderContract($data['id']);
+       
+        $contractDetails = $this->Lease_Detail->getContractDetails($data['id']);
 
             // TRANSFORM DATE FROM DATABASE 
         $newDateFrom = new DateTime($contract->contractDateFrom);
@@ -339,14 +350,24 @@ class contractController extends Controller
 
             // 
         $sheet->getStyle('A1:A7')->applyFromArray($styleArray);
-        $sheet->getStyle('D1:D7')->applyFromArray($styleArray);
+        $sheet->getStyle('D1:D7')->applyFromArray($styleArray3);
         $sheet->getStyle('E1:E7')->applyFromArray($styleArray2);
         $sheet->getStyle('F1:F7')->applyFromArray($styleArray2);
         $sheet->getStyle('G5')->applyFromArray($styleArray2);
         $sheet->mergeCells('A11:B11');
         $sheet->mergeCells('C11:D11');
+        
+
+        if($contract->withRentFree == 'YES'){
+            $sheet->mergeCells('C12:D12');
+            $sheet->mergeCells('E12:H12');
+            $sheet->getStyle('E12:H12')->applyFromArray($borderArray);
+        }
+        
+
         $sheet->getStyle('A11:H11')->applyFromArray($borderArray);
         $sheet->getStyle('A11:H11')->applyFromArray($styleArray);
+        $sheet->freezePane('A12');
 
 
 
@@ -358,7 +379,7 @@ class contractController extends Controller
         $sheet->getColumnDimension('F')->setWidth(12);
         $sheet->getColumnDimension('G')->setWidth(12);
         $sheet->getColumnDimension('H')->setWidth(12);
-        $sheet->getRowDimension('11')->setRowHeight(50);
+        $sheet->getRowDimension('11')->setRowHeight(35);
 
 
 
@@ -401,34 +422,74 @@ class contractController extends Controller
 
                 // CONTRACT YEAR DETAILS
         $cnt = 12;
+        // foreach($contractRentFreeDetails as $row){
+        //     $newDateFrom = new DateTime($row->periodFrom);
+        //     $newDateFrom = $newDateFrom->format('m-d-Y');
+        //     $sheet->setCellValue('A'.$cnt, $newDateFrom);
+        //     $newDateTo = new DateTime($row->periodTo);
+        //     $newDateTo = $newDateTo->format('m-d-Y');
+        //     $sheet->setCellValue('B'.$cnt, $newDateTo);
+        //     // $sheet->setCellValue('C'.$cnt, $row->rentFreeYear . ' ' . $row->rentFreeMonth . ' ' . $row->rentFreeDay);
+        //     $cnt++;
+        // }
+
         foreach($contractDetails as $row){
-            $newDateFrom = new DateTime($row->periodFrom);
-            $newDateFrom = $newDateFrom->format('m-d-Y');
-            $sheet->setCellValue('A'.$cnt, $newDateFrom);
-            $newDateTo = new DateTime($row->periodTo);
-            $newDateTo = $newDateTo->format('m-d-Y');
-            $sheet->setCellValue('B'.$cnt, $newDateTo);
-            $sheet->setCellValue('C'.$cnt, $row->yearID);
-            $sheet->setCellValue('D'.$cnt, $row->escalationPercent . '%');
-            $sheet->setCellValue('E'.$cnt, number_format($row->rentAmount,2));
-            $sheet->setCellValue('F'.$cnt, number_format($row->vatAmount,2));
-            $sheet->setCellValue('G'.$cnt, number_format($row->ewtAmount,2));
-            $sheet->setCellValue('H'.$cnt, number_format($row->netDueAmount,2));
+            $year = $row->rentFreeYear;
+            $month = $row->rentFreeMonth;
+            $day = $row->rentFreeDay;
 
+            if($year == null )
+            {
+                $year = '';
+            }else{
+                $year = $year . " Years";
+            }
+            if($month == null){
+                $month = '';
+            }else{
+                $month = $month . " Months";
+            }
+            if($day == null){
+                $day = '';
+            }else{
+                $day = $day . " Days";
+            }
+            if($row->isRentFree == '1'){
+                $newDateFrom = new DateTime($row->periodFrom);
+                $newDateFrom = $newDateFrom->format('m-d-Y');
+                $sheet->setCellValue('A'.$cnt, $newDateFrom);
+                $newDateTo = new DateTime($row->periodTo);
+                $newDateTo = $newDateTo->format('m-d-Y');
+                $sheet->setCellValue('B'.$cnt, $newDateTo);
+                $sheet->setCellValue('C'.$cnt, $year . ' ' . $month . ' ' . $day);
+                $sheet->setCellValue('E'.$cnt,'RENT FREE (not included in lease term)');
+                
 
-
-
-
-
-            // echo $row->periodFrom;
-            // echo "<br>";
+            }else{
+                $newDateFrom = new DateTime($row->periodFrom);
+                $newDateFrom = $newDateFrom->format('m-d-Y');
+                $sheet->setCellValue('A'.$cnt, $newDateFrom);
+                $newDateTo = new DateTime($row->periodTo);
+                $newDateTo = $newDateTo->format('m-d-Y');
+                $sheet->setCellValue('B'.$cnt, $newDateTo);
+                $sheet->setCellValue('C'.$cnt, $row->yearID);
+                $sheet->setCellValue('D'.$cnt, $row->escalationPercent . '%');
+                $sheet->setCellValue('E'.$cnt, number_format($row->rentAmount,2));
+                $sheet->setCellValue('F'.$cnt, number_format($row->vatAmount,2));
+                $sheet->setCellValue('G'.$cnt, number_format($row->ewtAmount,2));
+                $sheet->setCellValue('H'.$cnt, number_format($row->netDueAmount,2));
+            }
             $cnt++;
         }
         
-
-
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+    }
+
+    public function testing1234(){
+        $data = request()->all();
+
+        dd($data);
     }
 
 }
